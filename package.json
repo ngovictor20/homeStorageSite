@@ -1,0 +1,19 @@
+{
+  "name": "storage-webapp",
+  "version": "1.0.0",
+  "description": "Home storage web application. Aim is to have this be our own \"Google Drive\" for home",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngovictor20/storageWebApp.git"
+  },
+  "author": "Victor Ngo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ngovictor20/storageWebApp/issues"
+  },
+  "homepage": "https://github.com/ngovictor20/storageWebApp#readme"
+}
