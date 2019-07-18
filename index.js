@@ -3,7 +3,7 @@ const fs = require('fs');
 const multer = require('multer')
 const bodyParser = require('body-parser')
 var upload = multer();
-
+var file = require("./models/file")
 
 const hostname = '0.0.0.0';
 const port = 3000;
