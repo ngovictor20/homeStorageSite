@@ -35,18 +35,11 @@ app.post("/",upload.single('file'),(req,res) =>{
 		res.send("post request for file upload, no file uploaded")
 	}
 })
-
-
 //handlers for FTPSERVER
 ftpServer.on('login', (data,resolve,reject)=>{
     console.log("logging data");
-    console.log(data);
+    //console.log(data);
 });
-
-
-
-
-
 
 app.listen(port, hostname, ()=>{
     console.log("Listening on port 3000")
@@ -54,9 +47,11 @@ app.listen(port, hostname, ()=>{
 	console.log("FTP Server running on port 21")
 	example()
     })
+    console.log("Did i get out")
 })
 
 async function example(){
+    console.log("example function")
     const client = new ftp.Client()
     client.ftp.verbose = true
     try {
@@ -66,11 +61,14 @@ async function example(){
 	    user:"anonymous",
 	    password: "test"
 	})
+	console.log("logging list")
 	console.log(await client.list())
-
+	console.log("logging pwd")
+	console.log(await client.pwd())
     }
     catch(err){
 	console.log(err)
     }
+    console.log("exiting")
     client.close()
 }
