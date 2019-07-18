@@ -11,9 +11,7 @@ var upload = multer();
 const hostname = '0.0.0.0';
 const port = 3000;
 
-const ftpServer = new FtpSvr('ftp://'+hostname+':'+21,{
-    pasv_url: "0.0.0.0"
-})
+const ftpServer = new FtpSvr('ftp://0.0.0.0:9876')
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -41,7 +39,8 @@ app.post("/",upload.single('file'),(req,res) =>{
 
 //handlers for FTPSERVER
 ftpServer.on('login', (data,resolve,reject)=>{
-    console.log('data');
+    console.log("logging data");
+    console.log(data);
 });
 
 
@@ -53,5 +52,25 @@ app.listen(port, hostname, ()=>{
     console.log("Listening on port 3000")
     ftpServer.listen().then(()=>{
 	console.log("FTP Server running on port 21")
+	example()
     })
 })
+
+async function example(){
+    const client = new ftp.Client()
+    client.ftp.verbose = true
+    try {
+	await client.access({
+	    host:"localhost",
+	    port:21,
+	    user:"anonymous",
+	    password: "test"
+	})
+	console.log(await client.list())
+
+    }
+    catch(err){
+	console.log(err)
+    }
+    client.close()
+}
