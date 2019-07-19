@@ -12,13 +12,6 @@ const port = 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('views',__dirname+'/views');
 app.set('view engine', 'ejs');
-
-
-
-
-
-
-
 app.get("/",(req,res)=>{
 	res.render("home");
 })
@@ -69,12 +62,29 @@ app.get("/uploads",(req,res)=>{
 	}
     })
 })
+//create folder
+app.post("/uploads",(req,res)=>{
+    
+})
+
 
 
 app.listen(port, hostname, ()=>{
     console.log("Listening on port 3000")
     console.log("Did i get out")
 })
+
+async function createFolder(pth){
+    fs.mkdir(pth,(err)=>{
+	if(err){
+	    console.log(err)
+	}else{
+	    console.log("Creating folder")
+	}
+    })
+}
+
+
 
 async function listDir(pth){
     fs.readdir(pth,{
