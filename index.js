@@ -2,73 +2,90 @@ const app = require('express')()
 const fs = require('fs');
 const multer = require('multer')
 const bodyParser = require('body-parser')
-const ftp = require('basic-ftp')
-const FtpSvr = require('ftp-srv')
-
+const path = require("path");
 var upload = multer();
 //var file = require("./models/file")
 
 const hostname = '0.0.0.0';
 const port = 3000;
 
-const ftpServer = new FtpSvr('ftp://0.0.0.0:9876')
-
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('views',__dirname+'/views');
 app.set('view engine', 'ejs');
 
 
+
+
+
+
+
 app.get("/",(req,res)=>{
 	res.render("home");
-
 })
 
 app.post("/",upload.single('file'),(req,res) =>{
 	//handle file uploading
 	//console.log(req)
-	if(req.file){
-		console.log(req.file)
-		res.json(req.file)
-	}else{
-		console.log("no files uploaded")
-		res.send("post request for file upload, no file uploaded")
-	}
+    if(req.file){
+	console.log(req.file)
+	fs.appendFile("./uploads/"+req.file.originalname,req.file.buffer,(err)=>{
+	    if(err){
+		console.log("Ran into an error")
+		console.log(err)
+		throw err
+	    }else{
+		console.log("File is created")
+	    }
+	})
+	res.json(req.file)
+    }else{
+	console.log("no files uploaded")
+    }
 })
-//handlers for FTPSERVER
-ftpServer.on('login', (data,resolve,reject)=>{
-    console.log("logging data");
-    //console.log(data);
-});
+
+app.get("/uploads",(req,res)=>{
+    fs.readdir("./uploads",{
+	withFileTypes:true
+    }, (err,files)=>{
+	if(err){
+	    throw(err)
+	}else{
+	    let fileList = []
+	    console.log("returning files")
+	    console.log(files)
+	    //res.render("displayDrive",{dir:files})
+	    files.forEach(function(x){
+		fil = path.parse(x)
+		fileList.push(
+		    {
+			filename: fil.name,
+			ext: fil.ext,
+			stats: fs.statSync("./uploads/"+x)
+		    }
+		)
+	    })
+	    console.log(fileList)
+	    res.render("displayDrive",{dir:fileList})
+	}
+    })
+})
+
 
 app.listen(port, hostname, ()=>{
     console.log("Listening on port 3000")
-    ftpServer.listen().then(()=>{
-	console.log("FTP Server running on port 21")
-	example()
-    })
     console.log("Did i get out")
 })
 
-async function example(){
-    console.log("example function")
-    const client = new ftp.Client()
-    client.ftp.verbose = true
-    try {
-	await client.access({
-	    host:"localhost",
-	    port:21,
-	    user:"anonymous",
-	    password: "test"
-	})
-	console.log("logging list")
-	console.log(await client.list())
-	console.log("logging pwd")
-	console.log(await client.pwd())
-    }
-    catch(err){
-	console.log(err)
-    }
-    console.log("exiting")
-    client.close()
+async function listDir(pth){
+    fs.readdir(pth,{
+	withFileTypes:true
+    }, (err,files)=>{
+	if(err){
+	    throw(err)
+	}else{
+	    console.log("returning files")
+	    console.log(files)
+	    return(files)
+	}
+    })
 }
