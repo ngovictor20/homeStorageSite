@@ -4,7 +4,11 @@ const multer = require('multer')
 const bodyParser = require('body-parser')
 const path = require("path");
 var upload = multer();
-//var file = require("./models/file")
+var File = require("./models/files")
+var Folder = require("./models/folder")
+var fileRoute = require("./routes/files")
+var folderRoute = require("./routes/folder")
+
 
 const hostname = '0.0.0.0';
 const port = 3000;
@@ -38,7 +42,7 @@ app.post("/",upload.single('file'),(req,res) =>{
 
 app.get("/uploads",(req,res)=>{
     fs.readdir("./uploads",{
-	withFileTypes:true
+	//withFileTypes:true
     }, (err,files)=>{
 	if(err){
 	    throw(err)
