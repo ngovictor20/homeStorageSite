@@ -11,34 +11,49 @@ function seedDB(){
             console.log(err)
         }else{
             parent = doc
+            fs.readdir(__dirname+"/uploads/",(err,files)=>{
+                files.forEach(function(x){
+                    fs.lstat(__dirname+"/uploads/"+x,(err,stat)=>{
+                        if(stat.isDirectory()){
+                            console.log("create a folder model")
+                            var folderSchema = {
+                                name:x,
+                                path:__dirname + "\\uploads\\" + x,
+                                parentFolder: parent
+                            }
+                            Folder.create(folderSchema,(err,doc)=>{
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    console.log("Creating folder document")
+                                    console.log(doc)
+                                }
+                            })
+                        }else if(stat.isFile()){
+                            console.log("create a file model")
+                            var fileSchema = {
+                                name: x,
+                                path: __dirname+"\\uploads\\"+x,
+                                fileSize: stat.size,
+                                parentFolder: parent
+                            }
+                            File.create(fileSchema,(err,doc)=>{
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    console.log("Creating file document")
+                                    console.log(doc)
+                                }
+                            })
+                        }
+        
+                    })
+                })
+            })
         }
     })
 
-    fs.readdir(__dirname+"/uploads/",{withFileTypes:true},(err,files)=>{
-        files.forEach(function(x){
-            if(x.isDirectory){
-                console.log("create a folder model")
-                var folderSchema = {
-                    name:x.name,
-                    path:__dirname + "\\uploads\\" + x.name,
-                    parentFolder: parent
-                }
-                Folder.create(folderSchema,(err,doc)=>{
-                    if(err){
-                        console.log(err)
-                    }else{
-                        console.log("Creating folder document")
-                        console.log(doc)
-                    }
-                })
-            }else{
-                console.log("create a file model")
-                var fileSchema = {
-
-                }
-            }
-        })
-    })
+    
 }
 
 module.exports = seedDB

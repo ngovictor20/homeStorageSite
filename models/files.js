@@ -1,13 +1,13 @@
 var mongoose = require('mongoose');
 
 var fileSchema = new mongoose.Schema({
-    fileName: String,
+    name: String,
     path: String,
-    mimeType: String,
-    encoding: String,
-    originalName: String,
     fileSize: String,
-    parentFolder: String
+    parentFolder: {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Folder"
+    }
 })
 
 
