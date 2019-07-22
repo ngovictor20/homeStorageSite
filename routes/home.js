@@ -5,7 +5,8 @@ var upload = multer();
 const fs = require("fs")
 
 router.get("/", (req, res) => {
-	res.render("home");
+	getDirContents()
+	res.render("./home");
 })
 
 router.post("/", upload.single('file'), (req, res) => {
@@ -42,7 +43,7 @@ router.post("/uploads", (req, res) => {
 
 function getDirContents() {
 	fs.readdir("./uploads", {
-		//withFileTypes:true
+		withFileTypes:true
 	}, (err, files) => {
 		if (err) {
 			throw (err)
@@ -67,4 +68,4 @@ function getDirContents() {
 	})
 }
 
-modules.exports = router;
+module.exports = router;

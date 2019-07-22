@@ -8,7 +8,7 @@ var fileSchema = new mongoose.Schema({
     originalName: String,
     fileSize: String,
     parentFolder: String
-})    
+})
 
 
 
