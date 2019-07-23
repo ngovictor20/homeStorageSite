@@ -6,14 +6,14 @@ var folderSchema = new mongoose.Schema({
         default: "New Folder"
     },
     path:String,
-    childFiles: {
+    childFiles: [{
         type:mongoose.Schema.Types.ObjectId,
         ref: "File"
-    },
-    childFolders:{
+    }],
+    childFolders:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Folder"
-    },
+    }],
     parentFolder:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Folder"

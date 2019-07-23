@@ -33,7 +33,7 @@ mongoose.connect(uri, { useNewUrlParser: true }, (err) => {
     }
 })
 
-seedDB()
+//seedDB()
 
 
 app.listen(port, hostname, () => {

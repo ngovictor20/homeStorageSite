@@ -4,56 +4,112 @@ var Folder = require("./models/folder")
 const fs = require('fs')
 
 
-function seedDB(){
+
+
+function seedDB() {
     let parent
-    Folder.findById("5d3520561c9d44000000ce52",(err,doc)=>{
-        if(err){
+    var promises = []
+    Folder.findById("5d36456b1c9d440000bc296d", (err, doc) => {
+        if (err) {
             console.log(err)
-        }else{
+        } else {
             parent = doc
-            fs.readdir(__dirname+"/uploads/",(err,files)=>{
-                files.forEach(function(x){
-                    fs.lstat(__dirname+"/uploads/"+x,(err,stat)=>{
-                        if(stat.isDirectory()){
-                            console.log("create a folder model")
-                            var folderSchema = {
-                                name:x,
-                                path:__dirname + "\\uploads\\" + x,
-                                parentFolder: parent
-                            }
-                            Folder.create(folderSchema,(err,doc)=>{
-                                if(err){
-                                    console.log(err)
-                                }else{
-                                    console.log("Creating folder document")
-                                    console.log(doc)
-                                }
-                            })
-                        }else if(stat.isFile()){
-                            console.log("create a file model")
-                            var fileSchema = {
-                                name: x,
-                                path: __dirname+"\\uploads\\"+x,
-                                fileSize: stat.size,
-                                parentFolder: parent
-                            }
-                            File.create(fileSchema,(err,doc)=>{
-                                if(err){
-                                    console.log(err)
-                                }else{
-                                    console.log("Creating file document")
-                                    console.log(doc)
-                                }
-                            })
-                        }
-        
-                    })
+            fs.readdir(__dirname + "/uploads/", (err, files) => {
+                files.forEach(function (x) {
+                    promises.push(doAsync(x, parent))
+                    // fs.lstat(__dirname+"/uploads/"+x,(err,stat)=>{
+                    //     if(stat.isDirectory()){
+                    //         console.log("create a folder model")
+                    //         var folderSchema = {
+                    //             name:x,
+                    //             path:__dirname + "\\uploads\\" + x,
+                    //             parentFolder: parent
+                    //         }
+                    //         Folder.create(folderSchema,(err,newFolder)=>{
+                    //             if(err){
+                    //                 console.log(err)
+                    //             }else{
+                    //                 console.log("Creating folder document")
+                    //                 console.log(newFolder)
+                    //                 doc.childFolders.push(newFolder)
+                    //             }
+                    //         })
+                    //     }else if(stat.isFile()){
+                    //         console.log("create a file model")
+                    //         var fileSchema = {
+                    //             name: x,
+                    //             path: __dirname+"\\uploads\\"+x,
+                    //             fileSize: stat.size,
+                    //             parentFolder: parent
+                    //         }
+                    //         File.create(fileSchema,(err,newFile)=>{
+                    //             if(err){
+                    //                 console.log(err)
+                    //             }else{
+                    //                 console.log("Creating file document")
+                    //                 console.log(newFile)
+                    //                 doc.childFiles.push(newFile)
+                    //             }
+                    //         })
+                    //     }
+
+                    // })
                 })
             })
+
         }
     })
 
-    
+    Promise.all(promises).then(() => {
+
+    })
+}
+
+
+function doAsync(x, parent) {
+    return new Promise((resolve,reject) => {
+        fs.lstat(__dirname + "/uploads/" + x, (err, stat) => {
+            if (stat.isDirectory()) {
+                console.log("create a folder model")
+                var folderSchema = {
+                    name: x,
+                    path: __dirname + "\\uploads\\" + x,
+                    parentFolder: parent
+                }
+                Folder.create(folderSchema, (err, newFolder) => {
+                    if (err) {
+                        console.log(err)
+                        reject(err)
+                    } else {
+                        console.log("Creating folder document")
+                        console.log(newFolder)
+                        doc.childFolders.push(newFolder)
+                        resolve(newFolder)
+                    }
+                })
+            } else if (stat.isFile()) {
+                console.log("create a file model")
+                var fileSchema = {
+                    name: x,
+                    path: __dirname + "\\uploads\\" + x,
+                    fileSize: stat.size,
+                    parentFolder: parent
+                }
+                File.create(fileSchema, (err, newFile) => {
+                    if (err) {
+                        console.log(err)
+                        reject(err)
+                    } else {
+                        console.log("Creating file document")
+                        console.log(newFile)
+                        doc.childFiles.push(newFile)
+                        resolve(newFile)
+                    }
+                })
+            }
+
+        })
+    })
 }
 
 module.exports = seedDB
