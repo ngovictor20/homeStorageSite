@@ -16,7 +16,7 @@ function seedDB() {
             parent = doc
             fs.readdir(__dirname + "/uploads/", (err, files) => {
                 files.forEach(function (x) {
-                    promises.push(doAsync(x, parent))
+                    promises.push(doAsync(x, doc))
                     // fs.lstat(__dirname+"/uploads/"+x,(err,stat)=>{
                     //     if(stat.isDirectory()){
                     //         console.log("create a folder model")
@@ -56,13 +56,18 @@ function seedDB() {
                     // })
                 })
             })
-
+            if(promises.length > 0){
+                console.log("calling promise.all")
+                Promise.all(promises).then(() => {
+                    parent.save()
+                })
+            }
         }
-    })
-
-    Promise.all(promises).then(() => {
+        
 
     })
+
+    
 }
 
 
@@ -83,7 +88,7 @@ function doAsync(x, parent) {
                     } else {
                         console.log("Creating folder document")
                         console.log(newFolder)
-                        doc.childFolders.push(newFolder)
+                        parent.childFolders.push(newFolder)
                         resolve(newFolder)
                     }
                 })
@@ -102,7 +107,7 @@ function doAsync(x, parent) {
                     } else {
                         console.log("Creating file document")
                         console.log(newFile)
-                        doc.childFiles.push(newFile)
+                        parent.childFiles.push(newFile)
                         resolve(newFile)
                     }
                 })
