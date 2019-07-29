@@ -5,8 +5,9 @@ var upload = multer();
 const fs = require("fs")
 
 router.get("/", (req, res) => {
-	getDirContents()
-	res.render("./home");
+	//getDirContents()
+	//res.render("./home");
+	res.redirect("/folder/5d3b8749710939dd948a453a")
 })
 
 router.post("/", upload.single('file'), (req, res) => {

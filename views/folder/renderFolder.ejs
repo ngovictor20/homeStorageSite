@@ -1,8 +1,39 @@
 <html>
-    <head>
 
-    </head>
-    <body>
-        <h1></h1>
-    </body>
+<head>
+
+</head>
+
+<body>
+    <h1><%= folder.name %></h1>
+    <div>
+        <% folder.childFolders.forEach((x)=>{ %>
+        <a href="/folder/<%=x._id%>/" data="<%= x._id %>"><%= x.name %></a>
+        <% }) %>
+    </div>
+    <div>
+        <% folder.childFiles.forEach((x)=>{ %>
+        <a href="/folder/<%=folder.name%>/<%=x._id%>" data="<%= x._id%>"><%= x.name %></a>
+        <% }) %>
+    </div>
+
+
+    <div>
+        <form action="/folder/<%= folder._id %>/file" method="POST" enctype="multipart/form-data">
+            <label>Upload File</label>
+            <input type="file" name="file">
+            <button>submit</button>
+        </form>
+    </div>
+
+    <div>
+        <form action="/folder/<%=folder._id%>" method="POST">
+            <label>New Folder</label>
+            <input type="text" name="folderName" id="folderName">
+            <button>submit</button>
+        </form>
+    </div>
+
+</body>
+
 </html>

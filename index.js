@@ -30,10 +30,11 @@ mongoose.connect(uri, { useNewUrlParser: true }, (err) => {
         throw (err)
     } else {
         console.log('established connection with database')
+        //seedDB()
     }
 })
 
-seedDB()
+
 
 
 app.listen(port, hostname, () => {

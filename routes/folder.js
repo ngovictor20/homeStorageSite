@@ -10,28 +10,49 @@ const Folder = require("../models/folder")
 
 
 //render
-router.get("folder/:folder_id", (req,res)=>{
+router.get("/folder/:folder_id", (req,res)=>{
     console.log("Folder Route")
     Folder.findById(req.params.folder_id).populate("childFiles").populate("childFolders").populate("parentFolder").exec((err,doc)=>{
         if(err){
             console.log(err)
+            res.redirect("back")
         }else{
+           // console.log(doc)
             res.render("../views/folder/renderFolder",{folder : doc})
         }
     })
 })
 
 //create
-router.post("folder",(req,res)=>{
+router.post("/folder/:folder_id",(req,res)=>{
     console.log("creating folder document")
-    //Folder.create()
+    console.log(req.body.folderName)
+    if(req.body.folderName){
+        Folder.findById(req.params.folder_id).populate("parentFolder").exec((err,folder)=>{
+            if(err){
+                console.log(err)
+                res.redirect("/folder/"+req.params.folder_id)
+            }else{
+                fs.mkdir(folder.path+req.body.folderName,(err)=>{
+                    if(err){
+                        console.log("error with mkdir")
+                    }else{
+                        res.redirect("/folder/"+folder._id)
+                    }
+                })
+            }
+            
+        })
+    }
+    else{
 
-    //fs.mkdir("")
+    }
 })
 
 
-//edit
-router.get("folder/:folder_id/edit",(req,res)=>{
+//update
+//ajax
+router.post("folder/:folder_id/edit",(req,res)=>{
     Folder.findByIdAndUpdate(req.params.folder_id,{},(err,doc)=>{
         if(err){
             console.log(err)
@@ -40,9 +61,6 @@ router.get("folder/:folder_id/edit",(req,res)=>{
         }
     })
 })
-
-
-//update
 
 
 
