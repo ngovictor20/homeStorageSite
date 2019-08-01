@@ -51,6 +51,7 @@ router.post("/folder/:folder_id/file", upload.single('file'), (req,res)=>{
                     parentFolder: doc
                 }
                 console.log(fileSchema)
+                //ISSUE IS HERE
                 console.log(doc.path+req.file.originalname+"\\")
                 //could create a custom storage engine so this is embedded in multer
                 fs.writeFile(doc.path+req.file.originalname,req.file.buffer,(err)=>{

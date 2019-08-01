@@ -5,6 +5,10 @@
 </head>
 
 <body>
+    <% if(folder.parentFolder){ %>
+        <a href="/folder/<%= folder.parentFolder._id %>">Back</a>
+    <% } %>
+    
     <h1><%= folder.name %></h1>
     <div>
         <% folder.childFolders.forEach((x)=>{ %>

@@ -4,44 +4,6 @@ var multer = require("multer")
 var upload = multer();
 const fs = require("fs")
 
-router.get("/", (req, res) => {
-	//getDirContents()
-	//res.render("./home");
-	res.redirect("/folder/5d3b8749710939dd948a453a")
-})
-
-router.post("/", upload.single('file'), (req, res) => {
-	//handle file uploading
-	//console.log(req)
-	if (req.file) {
-		console.log(req.file)
-		fs.appendFile("./uploads/" + req.file.originalname, req.file.buffer, (err) => {
-			if (err) {
-				console.log("Ran into an error")
-				console.log(err)
-				throw err
-			} else {
-				console.log("File is created")
-			}
-		})
-		res.json(req.file)
-	} else {
-		console.log("no files uploaded")
-	}
-})
-
-router.get("/uploads", (req, res) => {
-
-})
-
-
-
-//create folder
-router.post("/uploads", (req, res) => {
-
-})
-
-
 function getDirContents() {
 	fs.readdir("./uploads", {
 		withFileTypes:true

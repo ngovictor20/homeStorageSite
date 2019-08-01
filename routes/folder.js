@@ -28,7 +28,7 @@ router.post("/folder/:folder_id",(req,res)=>{
     console.log("creating folder document")
     console.log(req.body.folderName)
     if(req.body.folderName){
-        Folder.findById(req.params.folder_id).populate("parentFolder").exec((err,folder)=>{
+        Folder.findById(req.params.folder_id).populate("parentFolder").populate("childFolders").exec((err,folder)=>{
             if(err){
                 console.log(err)
                 res.redirect("/folder/"+req.params.folder_id)
@@ -37,7 +37,22 @@ router.post("/folder/:folder_id",(req,res)=>{
                     if(err){
                         console.log("error with mkdir")
                     }else{
-                        res.redirect("/folder/"+folder._id)
+                        var newFolderObj = {
+                            name: req.body.folderName,
+                            parentFolder:folder._id,
+                            path: folder.path+"//"+req.body.folderName
+                        }
+                        Folder.create(newFolderObj,(err,newFolder)=>{
+                            if(err){
+                                console.log(err)
+                            }else{
+                                console.log(newFolder)
+                                folder.childFolders.push(newFolder._id)
+                                folder.save()
+                                res.redirect("/folder/"+newFolder._id)
+                            }
+                        })
+                        
                     }
                 })
             }
