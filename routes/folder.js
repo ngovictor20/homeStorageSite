@@ -40,7 +40,7 @@ router.post("/folder/:folder_id",(req,res)=>{
                         var newFolderObj = {
                             name: req.body.folderName,
                             parentFolder:folder._id,
-                            path: folder.path+"//"+req.body.folderName
+                            path: folder.path+req.body.folderName
                         }
                         Folder.create(newFolderObj,(err,newFolder)=>{
                             if(err){
@@ -76,34 +76,6 @@ router.post("folder/:folder_id/edit",(req,res)=>{
         }
     })
 })
-
-
-
-async function createFolder(pth){
-    fs.mkdir(pth,(err)=>{
-	if(err){
-	    console.log(err)
-	}else{
-	    console.log("Creating folder")
-	}
-    })
-}
-
-
-
-async function listDir(pth){
-    fs.readdir(pth,{
-	withFileTypes:true
-    }, (err,files)=>{
-	if(err){
-	    throw(err)
-	}else{
-	    console.log("returning files")
-	    console.log(files)
-	    return(files)
-	}
-    })
-}
 
 
 module.exports = router

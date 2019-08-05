@@ -1,4 +1,5 @@
-const app = require('express')()
+const express = require('express')
+const app = express()
 const fs = require('fs');
 const multer = require('multer')
 const bodyParser = require('body-parser')
@@ -7,17 +8,20 @@ const path = require("path");
 var upload = multer();
 var File = require("./models/files")
 var Folder = require("./models/folder")
-var fileRoute = require("./routes/files")
 var folderRoute = require("./routes/folder")
+var fileRoute = require("./routes/files")
 var homeRoute = require("./routes/home")
 const uri = "mongodb+srv://victoradmin:Harpie25@checklistapp-afjm1.mongodb.net/storageApp?retryWrites=true&w=majority"
 const seedDB = require("./seed")
 const hostname = '0.0.0.0';
 const port = 3000;
+const methodOverride = require("method-override")
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use(methodOverride("_method"));
 app.use(homeRoute)
 app.use(fileRoute)
 app.use(folderRoute)
@@ -38,8 +42,7 @@ mongoose.connect(uri, { useNewUrlParser: true }, (err) => {
 
 
 app.listen(port, hostname, () => {
-    console.log("Listening on port 3000")
-    console.log("Did i get out")
+    console.log("Listening on port "+ port)
 })
 
 

@@ -1,43 +1,52 @@
 <html>
 
 <head>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 </head>
 
 <body>
     <% if(folder.parentFolder){ %>
-        <a href="/folder/<%= folder.parentFolder._id %>">Back</a>
+    <a href="/folder/<%= folder.parentFolder._id %>">Back</a>
     <% } %>
-    
-    <h1><%= folder.name %></h1>
-    <div>
+
+    <h1 data-id="<%=folder._id%>" id="folderID"><%= folder.name %></h1>
+    <div id="folderDiv">
         <% folder.childFolders.forEach((x)=>{ %>
-        <a href="/folder/<%=x._id%>/" data="<%= x._id %>"><%= x.name %></a>
+        <a href="/folder/<%=x._id%>/" data-id="<%= x._id %>"><%= x.name %></a>
         <% }) %>
     </div>
-    <div>
-        <% folder.childFiles.forEach((x)=>{ %>
-        <a href="/folder/<%=folder.name%>/<%=x._id%>" data="<%= x._id%>"><%= x.name %></a>
-        <% }) %>
+    <div id="fileDiv">
+        <ul>
+            <% folder.childFiles.forEach((x)=>{ %>
+            <li>
+                <a href="/folder/<%=folder._id%>/<%=x._id%>" data-id="<%= x._id%>">
+                    <%= x.name %>
+                </a>
+                <div class="delete" data-id="<%=x._id%>">x</div>
+            </li>
+
+            <% }) %>
+        </ul>
     </div>
 
 
     <div>
-        <form action="/folder/<%= folder._id %>/file" method="POST" enctype="multipart/form-data">
+        <form action="" method="POST" enctype="multipart/form-data" id="fileUpload">
             <label>Upload File</label>
-            <input type="file" name="file">
+            <input type="file" name="file" id="fileField">
             <button>submit</button>
         </form>
     </div>
 
     <div>
-        <form action="/folder/<%=folder._id%>" method="POST">
+        <form action="/folder/<%=folder._id%>" method="POST" id="folderUpload">
             <label>New Folder</label>
             <input type="text" name="folderName" id="folderName">
             <button>submit</button>
         </form>
     </div>
 
+    <script type="text/javascript" src="../script/script.js"></script>
 </body>
 
 </html>
