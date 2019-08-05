@@ -98,20 +98,38 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
         if(err){
             console.log(err)
         }else{
-            console.log(fold.childFiles[0])
-            // FileModel.findByIdAndDelete(file_id,(error,deletedFile)=>{
-            //     if(error){
-            //         console.log(error)
-            //     }else{
-            //         fold.childFiles
-            //     }
-            // })
+            var index = fold.childFiles.findIndex((element)=>{
+                return element._id.equals(file_id)
+            })
+            console.log(index)
+            FileModel.findByIdAndDelete(file_id,(error,deletedFile)=>{
+                if(error){
+                    console.log(error)
+                }else{
+                    
+                    fs.unlink(deletedFile.path,(err)=>{
+                        if(err){
+                            console.log("error while deleting file")
+                            console.log(err)
+                        }else{
+                            console.log("deleting file")
+                            console.log("removing from parent document")
+                            fold.childFiles.remove(index)
+                            console.log("saving parent")
+                            fold.save()
+                        }
+                    })
+                }
+            })
         }
     })
     res.send("Delete response")
 })
 
+function isChildFile(element){
+    return element._id.equals()
 
+}
 // router.post("/folder/:folder_id/file", upload.single('file'), (req,res)=>{
 //     console.log("Folder Route")
 //     let fileSchema = {}
@@ -164,5 +182,10 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
 //     })
 // })
 
+Array.prototype.remove = function(from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
 
 module.exports = router
