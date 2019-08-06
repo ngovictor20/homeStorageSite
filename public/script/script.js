@@ -19,9 +19,14 @@ $("#fileUpload").submit(function (e) {
             success: function(r){
                 console.log("result",r)
                 if(r){
+                    console.log("Adding file to database and filesystem.")
                     var parent = $("#fileDiv")
                     console.log("<a href='/folder/"+folderID+'/'+r._id+" data-id="+r._id+">"+r.name+"</a>")
                     parent.append("<a href='/folder/"+folderID+'/'+r._id+"' data-id='"+r._id+"'>"+r.name+"</a>")
+                    var uploadedDiv = $("#uploadedDiv")
+                    uploadedDiv.css("display","inline")
+                    var uploadedList = $("uploadedList")
+                    uploadedList.append("<li data-id='"+r._id+"'>"+r.name+"</li>")
                 }
             }
         })
@@ -42,4 +47,8 @@ $(".delete").on("click",function(e){
             }
         }
     })
+})
+
+$("#uploadedDiv").on("click",function(e){
+    $("#uploadedList").css("display","none")
 })
