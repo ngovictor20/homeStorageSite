@@ -13,19 +13,23 @@
     <h1 data-id="<%=folder._id%>" id="folderID"><%= folder.name %></h1>
     <div id="folderDiv">
         <% folder.childFolders.forEach((x)=>{ %>
-        <a href="/folder/<%=x._id%>/" data-id="<%= x._id %>"><%= x.name %></a>
+        <%if(x){%>
+        <a href="/folder/<%=x._id%>" data-id="<%= x._id %>"><%= x.name %></a>
+        <%}%>
         <% }) %>
     </div>
     <div id="fileDiv">
         <ul>
             <% folder.childFiles.forEach((x)=>{ %>
+            <%if(x){%>
             <li>
-                <a href="/folder/<%=folder._id%>/<%=x._id%>" data-id="<%= x._id%>">
+
+                <a href='/folder/<%=folder._id%>/<%=x._id%>' data-id='<%= x._id%>'>
                     <%= x.name %>
                 </a>
-                <div class="delete" data-id="<%=x._id%>">x</div>
+                <div class='delete' data-id='<%=x._id%>'>x</div>
             </li>
-
+            <%}%>
             <% }) %>
         </ul>
     </div>

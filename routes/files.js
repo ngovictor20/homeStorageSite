@@ -32,6 +32,7 @@ router.get("/folder/:folder_id/:file_id", (req,res)=>{
     })
 })
 
+//create
 router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
     console.log("Ajax Request")
     console.log(req.body)
@@ -47,7 +48,7 @@ router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
             if(req.file){
                 fileSchema = {
                     name: req.file.originalname,
-                    path: doc.path,
+                    path: doc.path+req.file.originalname,
                     fileSize: req.file.size,
                     parentFolder: doc._id
                 }
@@ -55,7 +56,7 @@ router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
                 console.log("Path")
                 console.log(doc.path+req.file.originalname+"\\")
                 //could create a custom storage engine so this is embedded in multer
-                fs.writeFile(doc.path+"\\"+req.file.originalname,req.file.buffer,(err)=>{
+                fs.writeFile(doc.path+req.file.originalname,req.file.buffer,(err)=>{
                     if(err){
                         console.log(err)
                     }else{
@@ -106,8 +107,8 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
                 if(error){
                     console.log(error)
                 }else{
-                    
-                    fs.unlink(deletedFile.path,(err)=>{
+                    console.log(deletedFile)
+                    fs.unlink(deletedFile.path+deletedFile.name,(err)=>{
                         if(err){
                             console.log("error while deleting file")
                             console.log(err)
@@ -117,20 +118,19 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
                             fold.childFiles.remove(index)
                             console.log("saving parent")
                             fold.save()
-                            res.send("Delete response")
+                            res.send({
+                                response: "DELETE",
+                                parentFolder: fold
+                            })
                         }
                     })
                 }
             })
         }
     })
-    res.send("Delete response")
+    //res.send("Delete response")
 })
 
-function isChildFile(element){
-    return element._id.equals()
-
-}
 // router.post("/folder/:folder_id/file", upload.single('file'), (req,res)=>{
 //     console.log("Folder Route")
 //     let fileSchema = {}

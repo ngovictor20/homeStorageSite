@@ -17,7 +17,8 @@ router.get("/folder/:folder_id", (req,res)=>{
             console.log(err)
             res.redirect("back")
         }else{
-           // console.log(doc)
+            console.log("Hi")
+            console.log(doc)
             res.render("../views/folder/renderFolder",{folder : doc})
         }
     })

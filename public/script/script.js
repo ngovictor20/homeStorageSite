@@ -26,14 +26,19 @@ $("#fileUpload").submit(function (e) {
                     var uploadedDiv = $("#uploadedDiv")
                     uploadedDiv.css("display","inline")
                     var uploadedList = $("uploadedList")
-                    uploadedList.append("<li data-id='"+r._id+"'>"+r.name+"</li>")
+                    uploadedList.append("<li>\
+                    <a href='/folder/"+folderID+"/"+r._id+"' data-id='"+r._id+"'>r._id</a>\
+                    <div class='delete' data-id='"+r._id+"'>x</div></li>")
+                    $("#uploadedDiv").append("<p>"+r._id+"</p>")
+                    $("#uploadedDiv").css("display","inline-block")
                 }
             }
         })
     }
 });
 
-$(".delete").on("click",function(e){
+//probably an issue with putting getting the folderID here
+$("#fileDiv").delegate(".delete","click",function(e){
     var folder = $("#folderID")
     var folderID = folder.attr('data-id')
     console.log("click")
@@ -44,6 +49,8 @@ $(".delete").on("click",function(e){
         success: function(r){
             if(r){
                 console.log(r)
+                console.log("removing element")
+                $(this).parent().remove
             }
         }
     })
