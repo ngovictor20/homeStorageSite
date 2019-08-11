@@ -48,7 +48,7 @@ router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
             if(req.file){
                 fileSchema = {
                     name: req.file.originalname,
-                    path: doc.path+req.file.originalname,
+                    path: doc.path+"\\"+req.file.originalname,
                     fileSize: req.file.size,
                     parentFolder: doc._id
                 }
@@ -56,7 +56,7 @@ router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
                 console.log("Path")
                 console.log(doc.path+req.file.originalname+"\\")
                 //could create a custom storage engine so this is embedded in multer
-                fs.writeFile(doc.path+req.file.originalname,req.file.buffer,(err)=>{
+                fs.writeFile(doc.path+"\\"+req.file.originalname,req.file.buffer,(err)=>{
                     if(err){
                         console.log(err)
                     }else{
@@ -108,7 +108,7 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
                     console.log(error)
                 }else{
                     console.log(deletedFile)
-                    fs.unlink(deletedFile.path+deletedFile.name,(err)=>{
+                    fs.unlink(deletedFile.path,(err)=>{
                         if(err){
                             console.log("error while deleting file")
                             console.log(err)

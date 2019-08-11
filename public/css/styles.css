@@ -1,6 +1,12 @@
-#uploaded{
+#uploadedDiv{
+    background-color:grey;
     display:none;
     position: fixed;
     bottom: 5px;
     right: 0px;
+}
+
+body,html{
+    margin:0;
+    height:100%;
 }

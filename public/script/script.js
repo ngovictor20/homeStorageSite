@@ -20,17 +20,15 @@ $("#fileUpload").submit(function (e) {
                 console.log("result",r)
                 if(r){
                     console.log("Adding file to database and filesystem.")
-                    var parent = $("#fileDiv")
+                    var parent = $("#fileList")
                     console.log("<a href='/folder/"+folderID+'/'+r._id+" data-id="+r._id+">"+r.name+"</a>")
-                    parent.append("<a href='/folder/"+folderID+'/'+r._id+"' data-id='"+r._id+"'>"+r.name+"</a>")
-                    var uploadedDiv = $("#uploadedDiv")
-                    uploadedDiv.css("display","inline")
-                    var uploadedList = $("uploadedList")
-                    uploadedList.append("<li>\
-                    <a href='/folder/"+folderID+"/"+r._id+"' data-id='"+r._id+"'>r._id</a>\
-                    <div class='delete' data-id='"+r._id+"'>x</div></li>")
-                    $("#uploadedDiv").append("<p>"+r._id+"</p>")
-                    $("#uploadedDiv").css("display","inline-block")
+                    // parent.append("<li><a href='/folder/"+folderID+"/"+r._id+"' data-id='"+r._id+"'>r._id</a>\
+                    // <div class='delete' data-id='"+r._id+"'>x</div></li>")
+                    // // var uploadedDiv = $("#uploadedDiv")
+                    // uploadedDiv.css("display","inline")
+                    // var uploadedList = $("uploadedList")
+                    // uploadedList.append("<li>"+r.name+"</li>")
+                    // document.close()
                 }
             }
         })
