@@ -25,7 +25,7 @@ router.get("/folder/:folder_id", (req,res)=>{
 })
 
 //create
-router.post("/folder/:folder_id",(req,res)=>{
+router.post("/folder/:folder_id/new",(req,res)=>{
     console.log("creating folder document")
     console.log(req.body.folderName)
     if(req.body.folderName){
@@ -61,7 +61,8 @@ router.post("/folder/:folder_id",(req,res)=>{
         })
     }
     else{
-
+        console.log("Why am i here?")
+        return
     }
 })
 

@@ -22,9 +22,10 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(methodOverride("_method"));
+app.use(folderRoute)
 app.use(homeRoute)
 app.use(fileRoute)
-app.use(folderRoute)
+
 
 
 

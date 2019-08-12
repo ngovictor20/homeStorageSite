@@ -36,7 +36,7 @@
 
 
     <div>
-        <form action="" method="POST" enctype="multipart/form-data" id="fileUpload">
+        <form enctype="multipart/form-data" id="fileUpload">
             <label>Upload File</label>
             <input type="file" name="file" id="fileField">
             <button>submit</button>
@@ -44,7 +44,7 @@
     </div>
 
     <div>
-        <form action="/folder/<%=folder._id%>" method="POST" id="folderUpload">
+        <form action="/folder/<%=folder._id%>/new" method="POST" id="folderUpload">
             <label>New Folder</label>
             <input type="text" name="folderName" id="folderName">
             <button>submit</button>

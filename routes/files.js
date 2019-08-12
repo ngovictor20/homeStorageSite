@@ -23,11 +23,11 @@ router.get("/folder/:folder_id/:file_id", (req,res)=>{
                     console.log(err)
                 }else{
                     console.log("download")
-                    //res.redirect("/folder/"+req.params.folder_id)
+                    res.redirect("/folder/"+req.params.folder_id)
                 }
             })
             
-            //res.redirect("/folder/"+req.params.folder_id)
+            res.redirect("/folder/"+req.params.folder_id)
         }
     })
 })
@@ -42,13 +42,15 @@ router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
     Folder.findById(req.params.folder_id).populate("childFiles").populate("childFolders").populate("parentFolder").exec((err,doc)=>{
         if(err){
             console.log(err)
+            console.log("whats going on here")
             res.redirect("/folder/"+req.params.folder_id)
         }else{
+            console.log("Request.file")
             console.log(req.file)
             if(req.file){
                 fileSchema = {
                     name: req.file.originalname,
-                    path: doc.path+"\\"+req.file.originalname,
+                    path: doc.path+req.file.originalname,
                     fileSize: req.file.size,
                     parentFolder: doc._id
                 }
@@ -56,13 +58,13 @@ router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
                 console.log("Path")
                 console.log(doc.path+req.file.originalname+"\\")
                 //could create a custom storage engine so this is embedded in multer
-                fs.writeFile(doc.path+"\\"+req.file.originalname,req.file.buffer,(err)=>{
-                    if(err){
-                        console.log(err)
+                fs.writeFile(doc.path+"\\"+req.file.originalname,req.file.buffer,(errorWrite)=>{
+                    if(errorWrite){
+                        console.log(errorWrite)
                     }else{
                         console.log("write completed")
-                        FileModel.create(fileSchema,(err,newFile)=>{
-                            if(err){
+                        FileModel.create(fileSchema,(error,newFile)=>{
+                            if(error){
                                 console.log("mongodb create file failed")
                                 console.log(err)
                                 res.redirect("/folder/"+req.params.folder_id)
