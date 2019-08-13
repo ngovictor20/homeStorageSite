@@ -41,7 +41,7 @@ router.post("/folder/:folder_id/new",(req,res)=>{
                         var newFolderObj = {
                             name: req.body.folderName,
                             parentFolder:folder._id,
-                            path: folder.path+req.body.folderName
+                            path: folder.path+req.body.folderName+"\\"
                         }
                         Folder.create(newFolderObj,(err,newFolder)=>{
                             if(err){

@@ -18,16 +18,14 @@ router.get("/folder/:folder_id/:file_id", (req,res)=>{
             console.log(err)
         }else{
             console.log("Found file in mongodb")
-            res.download(doc.path,(err)=>{
-                if(err){
-                    console.log(err)
+            console.log(doc.path)
+            res.download(doc.path,(error)=>{
+                if(error){
+                    console.log(error)
                 }else{
                     console.log("download")
-                    res.redirect("/folder/"+req.params.folder_id)
                 }
             })
-            
-            res.redirect("/folder/"+req.params.folder_id)
         }
     })
 })
@@ -73,23 +71,19 @@ router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
                                 doc.childFiles.push(newFile._id)
                                 console.log("saving document")
                                 doc.save()
-                                console.log(doc)
+                                //console.log(doc)
+                                console.log("sending newfile document")
                                 res.send(newFile)
                             }
                         })
                     }
                 })
-                
-                //res.render("../views/folder/renderFolder",{folder : doc})
             }else{
                 console.log("file not found")
                 res.redirect("/folder/"+req.params.folder_id)
-            }
-            
+            }            
         }
-    })
-
-    
+    })    
 })
 
 

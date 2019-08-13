@@ -1,9 +1,6 @@
 #uploadedDiv{
     background-color:grey;
-    display:none;
-    position: fixed;
-    bottom: 5px;
-    right: 0px;
+
 }
 
 body,html{
