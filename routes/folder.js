@@ -11,7 +11,7 @@ const File = require("../models/files")
 
 
 router.get("/folder", (req, res) => {
-    res.redirect("/folder/5d52e45cbe36d951897979d4/")
+    res.redirect("/folder/5d3b8749710939dd948a453a/")
 })
 
 
@@ -75,44 +75,24 @@ router.post("/folder/:folder_id/new", (req, res) => {
 //delete
 router.delete("/folder/:folder_id", (req, res) => {
     console.log("Delete folder route")
-    // Folder.findByIdAndDelete(req.params.folder_id).populate("childFiles").exec((err, deletedDoc) => {
-    //     if (err) {
-    //         console.log(err)
-    //         console.log("ran into an error with finding")
-    //     } else {
-    //         deletedDoc.childFiles.forEach((x) => {
-    //             fs.unlink(x.path, (error) => {
-    //                 File.findByIdAndDelete(x._id, (delError, deletd) => {
-    //                     if (delError) {
-    //                         console.log(delError)
-    //                     } else {
-    //                         console.log("Deleted" + deletd.name + " from Mongo")
-    //                     }
-    //                 })
-    //             })
-    //         })
-    //         console.log("Done deleting folder")
-    //     }
-    // })
-    Folder.findByIdAndDelete(req.params.folder_id).populate("childFiles").exec((err,deletedDoc)=>{
-        let fun
-        if(err){
+    Folder.findById(req.params.folder_id).populate("childFiles").populate("childFolders").exec((err, deletedDoc) => {
+        if (err) {
             console.log(err)
             console.log("ran into an error with finding folder")
-        }else{
-            deletedDoc.childFiles.forEach((x)=>{
-                console.log("pushing")
-                fun.push(del(x))
-            })
-            Promise.all(fun).then(function(val){
-                console.log(val)
-            })
+        } else {
+            console.log("Starting recursive function")
+            if(deletedDoc){
+                console.log(deletedDoc)
+                delRecursive(deletedDoc).then(function (val) {
+                    console.log("Finished recursive function:" + val)
+                    res.send(val)
+                })
+            }else{
+                res.redirect("back")
+            }
         }
     })
 })
-
-
-
 
 
 //update
@@ -128,7 +108,112 @@ router.post("/folder/:folder_id/edit", (req, res) => {
 })
 
 
-function del(x) {
+
+function delRecursive(fold) {
+    return new Promise(function (resolve, reject) {
+        console.log("About to call mongodb find")
+        Folder.findByIdAndDelete(fold._id).populate("childFiles").populate("childFolders").exec((err, doc) => {
+            console.log("Inside delete callback")
+            if (err) {
+                console.log("ran into an error in finding folder document" + err)
+                reject(err)
+            } else {
+                console.log(fold)
+                console.log("Find successful")
+                let childFolderList = []
+                console.log(doc.childFolders)
+                if(doc.childFolders){
+                    doc.childFolders.forEach(function (folder) {
+                        if(folder){
+                            console.log(folder)
+                            console.log("Pushing recursive function into childFolderList Variable, id: " + folder._id)
+                            childFolderList.push(delRecursive(folder))
+                        }
+                    })
+                }
+                if(childFolderList.length != 0){
+                    let fun = []
+                    console.log("Child Folders Exist")
+                    Promise.all(childFolderList).then(function (result) {
+                        if (doc.childFiles) {
+                            doc.childFiles.forEach((x) => {
+                                console.log("pushing")
+                                fun.push(delFile(x))
+                            })
+                            Promise.all(fun).then(function (val) {
+                                fs.rmdir(doc.path,(rmDirErr)=>{
+                                    if(rmDirErr){
+                                        console.log("FS: deleting folder error")
+                                        console.log(rmDirErr)
+                                        reject("Failure: "+rmDirErr)
+                                    }else{
+                                        console.log("FS: Folder has been deleted successfully")
+                                        resolve("Done:" + val)
+                                    }
+                                })
+                            })
+                        } else {
+                            fs.rmdir(doc.path,(rmDirErr)=>{
+                                if(rmDirErr){
+                                    console.log("FS: deleting folder error")
+                                    console.log(rmDirErr)
+                                    reject("Failure: "+rmDirErr)
+                                }else{
+                                    console.log("FS: Folder has been deleted successfully")
+                                    resolve("Done:" + doc.path)
+                                }
+                            })
+                        }
+                    })
+                }else{
+                    console.log("No child folders")
+                    let fun = []
+                    console.log("Child Files Check If Statement for:" + doc.path)
+                    if (doc.childFiles) {
+                        doc.childFiles.forEach((x) => {
+                            console.log(x)
+                            console.log("pushing")
+                            fun.push(delFile(x))
+                        })
+                        Promise.all(fun).then(function (val) {
+                            fs.rmdir(doc.path,(rmDirErr)=>{
+                                if(rmDirErr){
+                                    console.log("FS: deleting folder error")
+                                    console.log(rmDirErr)
+                                    reject("Failure: "+rmDirErr)
+                                }else{
+                                    console.log("FS: Folder has been deleted successfully")
+                                    resolve("Done:" + doc.path)
+                                }
+                            })
+                        })
+                    } else {
+                        console.log("No Child Files for: "+ doc.path)
+                        fs.rmdir(doc.path,(rmDirErr)=>{
+                            if(rmDirErr){
+                                console.log("FS: deleting folder error")
+                                console.log(rmDirErr)
+                                reject("Failure: "+rmDirErr)
+                            }else{
+                                console.log("FS: Folder has been deleted successfully")
+                                resolve("Done:" + doc.path)
+                            }
+                        })
+                    }
+                }
+            }
+        })
+    })
+}
+
+
+function workChildFiles(){
+    
+}
+
+function delFile(x) {
+    console.log("Calling del function")
+    console.log(x)
     return new Promise(function (resolve, reject) {
         fs.unlink(x.path, (error) => {
             if (error) {
@@ -141,7 +226,7 @@ function del(x) {
                         reject("Failure: " + x._id)
                     } else {
                         console.log("Deleted" + deletd.name + " from Mongo")
-                        resolve(x._id)
+                        resolve("Successfully Deleted File in " + x.path)
                     }
                 })
             }
