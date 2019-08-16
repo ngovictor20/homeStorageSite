@@ -7,7 +7,7 @@ const path = require("path");
 var upload = multer();
 const mongoose = require('mongoose')
 const Folder = require("../models/folder")
-const File = require("../models/files")
+const FileModel = require("../models/files")
 
 
 router.get("/folder", (req, res) => {
@@ -98,14 +98,22 @@ router.delete("/folder/:folder_id", (req, res) => {
 //update
 //ajax
 router.post("/folder/:folder_id/edit", (req, res) => {
-    Folder.findByIdAndUpdate(req.params.folder_id, {name: req.body.name}, (err, doc) => {
-        if (err) {
-            console.log("Ran into error while updating")
-            console.log(err)
-        } else {
-            res.redirect("/folder/" + req.params.folder_id)
-        }
-    })
+    console.log(req.body)
+    if(req.body.name){
+        Folder.findByIdAndUpdate(req.params.folder_id, {name: req.body.name}, (err, foundDoc) => {
+            if (err) {
+                console.log("Ran into error while updating")
+                console.log(err)
+            } else {
+                fs.rename(foundDoc.path,)
+                res.redirect("/folder/" + req.params.folder_id)
+            }
+        })
+    }else{
+        console.log("req.body.name is empty")
+        res.redirect("back")
+    }
+
 })
 
 
@@ -219,7 +227,7 @@ function delFile(x) {
                 console.log("failed at unlink")
                 reject(error)
             } else {
-                File.findByIdAndDelete(x._id, (delError, deletd) => {
+                FileModel.findByIdAndDelete(x._id, (delError, deletd) => {
                     if (delError) {
                         console.log(delError)
                         reject("Failure: " + x._id)

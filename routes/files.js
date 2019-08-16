@@ -11,7 +11,7 @@ const FileModel = require("../models/files")
 
 
 //get request, should stream the file into 
-router.get("/folder/:folder_id/:file_id", (req,res)=>{
+router.get("/folder/:folder_id/file/:file_id", (req,res)=>{
     console.log("Folder Route")
     FileModel.findById(req.params.file_id).populate("parentFolders").exec((err,doc)=>{
         if(err){
@@ -102,6 +102,7 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
             FileModel.findByIdAndDelete(file_id,(error,deletedFile)=>{
                 if(error){
                     console.log(error)
+                    res.redirect("back")
                 }else{
                     console.log(deletedFile)
                     fs.unlink(deletedFile.path,(err)=>{
@@ -126,6 +127,26 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
     })
     //res.send("Delete response")
 })
+
+
+router.put("/folder/:folder_id/file/:file_id",(req,res)=>{
+    console.log("update request for file")
+    if(req.body){
+        FileModel.findByIdAndUpdate(req.params.file_id,{name:req.body.name},(err,foundFile)=>{
+            if(err){
+                console.log("Error with updating/finding file")
+                console.log(err)
+                res.redirect("back")
+            }else{
+                console.log("updated the file, new name: " + foundFile.name)
+                res.redirect("/folder/"+req.params.folder_id)
+            }
+        })
+    }else{
+
+    }
+})
+
 
 // router.post("/folder/:folder_id/file", upload.single('file'), (req,res)=>{
 //     console.log("Folder Route")

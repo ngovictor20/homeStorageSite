@@ -82,6 +82,7 @@ $("#uploadedDiv").on("click", function (e) {
 $("#fileDiv").delegate(".fileName","click",function(e){
     console.log("Click event for fileName")
     var name = $(this).text()
+    $(this).text("")
     console.log(name)
     if($(this).has(".renameFolderInput").length == 0){
         $(this).append("<input class='renameFolderInput' type='text' name='name' value='"+name+"'></input>")
