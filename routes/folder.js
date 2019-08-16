@@ -11,7 +11,7 @@ const File = require("../models/files")
 
 
 router.get("/folder", (req, res) => {
-    res.redirect("/folder/5d3b8749710939dd948a453a/")
+    res.redirect("/folder/5d3b8749710939dd948a453a")
 })
 
 
@@ -98,8 +98,9 @@ router.delete("/folder/:folder_id", (req, res) => {
 //update
 //ajax
 router.post("/folder/:folder_id/edit", (req, res) => {
-    Folder.findByIdAndUpdate(req.params.folder_id, {}, (err, doc) => {
+    Folder.findByIdAndUpdate(req.params.folder_id, {name: req.body.name}, (err, doc) => {
         if (err) {
+            console.log("Ran into error while updating")
             console.log(err)
         } else {
             res.redirect("/folder/" + req.params.folder_id)
@@ -108,6 +109,8 @@ router.post("/folder/:folder_id/edit", (req, res) => {
 })
 
 
+
+//functions for folder deletion 
 
 function delRecursive(fold) {
     return new Promise(function (resolve, reject) {
@@ -206,10 +209,6 @@ function delRecursive(fold) {
     })
 }
 
-
-function workChildFiles(){
-    
-}
 
 function delFile(x) {
     console.log("Calling del function")

@@ -78,3 +78,34 @@ $("#fileDiv").delegate(".delete", "click", function (e) {
 $("#uploadedDiv").on("click", function (e) {
     $("#uploadedList").css("display", "none")
 })
+
+$("#fileDiv").delegate(".fileName","click",function(e){
+    console.log("Click event for fileName")
+    var name = $(this).text()
+    console.log(name)
+    if($(this).has(".renameFolderInput").length == 0){
+        $(this).append("<input class='renameFolderInput' type='text' name='name' value='"+name+"'></input>")
+    }else{
+        console.log("already has an input element, no need to add input")
+    }
+})
+
+$("#fileDiv").delegate(".renameFolderInput","keypress",function(e){
+    if(e.which==13){
+        console.log("Hit enter, Should call AJAX")
+        event.preventDefault();
+        if($(this).val() != ""){
+            var name = $(this).val
+            console.log(name)
+            $.ajax({
+                url: "/folder/" + folderID + "/edit",
+                type: "POST",
+                data: name,
+                contentType : "json",
+                success: function (r){
+
+                }
+            })
+        }
+    }
+})

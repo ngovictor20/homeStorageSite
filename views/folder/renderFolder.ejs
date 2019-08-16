@@ -27,16 +27,16 @@
     
     
     <div id="fileDiv">
-        File List
         <ul id="fileList">
             <% folder.childFiles.forEach((x)=>{ %>
             <%if(x){%>
             <li>
 
-                <a href='/folder/<%=folder._id%>/<%=x._id%>' data-id='<%= x._id%>'>
-                    <%= x.name %>
-                </a>
+                <div class="fileName"><%= x.name %></div>
                 <div class='delete' data-id='<%=x._id%>'>x</div>
+                <a href='/folder/<%=folder._id%>/<%=x._id%>' data-id='<%= x._id%>'>
+                    DL
+                </a>
             </li>
             <%}%>
             <% }) %>

@@ -6,7 +6,7 @@ const fs = require("fs")
 
 
 router.get("/",(req,res)=>{
-	res.redirect("/folder/5d3b8749710939dd948a453a/")
+	res.redirect("/folder/5d3b8749710939dd948a453a")
 })
 
 module.exports = router;
