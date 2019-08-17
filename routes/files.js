@@ -143,7 +143,8 @@ router.put("/folder/:folder_id/file/:file_id",(req,res)=>{
             }
         })
     }else{
-
+        console.log("Req.body does not exist")
+        res.redirect("back")
     }
 })
 

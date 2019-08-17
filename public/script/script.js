@@ -84,6 +84,38 @@ $("#fileDiv").delegate(".fileName","click",function(e){
     var name = $(this).text()
     $(this).text("")
     console.log(name)
+    if($(this).has(".renameFileInput").length == 0){
+        $(this).append("<input class='renameFileInput' type='text' name='name' value='"+name+"'></input>")
+    }else{
+        console.log("already has an input element, no need to add input")
+    }
+})
+
+$("#fileDiv").delegate(".renameFileInput","keypress",function(e){
+    if(e.which==13){
+        console.log("Hit enter, Should call AJAX")
+        event.preventDefault();
+        if($(this).val() != ""){
+            var name = $(this).val
+            console.log(name)
+            $.ajax({
+                url: "/folder/" + folderID + "/edit",
+                type: "POST",
+                data: name,
+                contentType : "json",
+                success: function (r){
+
+                }
+            })
+        }
+    }
+})
+
+$("#folderDiv").delegate(".folderName","click",function(e){
+    console.log("Click event for folderName")
+    var name = $(this).text()
+    $(this).text("")
+    console.log(name)
     if($(this).has(".renameFolderInput").length == 0){
         $(this).append("<input class='renameFolderInput' type='text' name='name' value='"+name+"'></input>")
     }else{
@@ -91,7 +123,8 @@ $("#fileDiv").delegate(".fileName","click",function(e){
     }
 })
 
-$("#fileDiv").delegate(".renameFolderInput","keypress",function(e){
+
+$("#folderDiv").delegate(".renameFolderInput","keypress",function(e){
     if(e.which==13){
         console.log("Hit enter, Should call AJAX")
         event.preventDefault();
