@@ -81,26 +81,43 @@ $("#uploadedDiv").on("click", function (e) {
 
 $("#fileDiv").delegate(".fileName","click",function(e){
     console.log("Click event for fileName")
-    var name = $(this).text()
-    $(this).text("")
-    console.log(name)
+    var fileID = $(this).attr('data-id')
     if($(this).has(".renameFileInput").length == 0){
-        $(this).append("<input class='renameFileInput' type='text' name='name' value='"+name+"'></input>")
+        var name = $(this).text()
+        $(this).text("")
+        console.log(name)
+        $(this).append("<input class='renameFileInput' type='text' name='name' value='"+name+"' data-id='"+fileID+"'></input>")
     }else{
         console.log("already has an input element, no need to add input")
     }
 })
 
+$("#folderDiv").delegate(".folderName","click",function(e){
+    console.log("Click event for folderName")
+    if($(this).has(".renameFolderInput").length == 0){
+        var name = $(this).text()
+        $(this).text("")
+        console.log(name)
+        $(this).append("<input class='renameFolderInput' type='text' name='name' value='"+name+"'></input>")
+    }else{  
+        console.log("already has an input element, no need to add input")
+    }
+})
+
+
 $("#fileDiv").delegate(".renameFileInput","keypress",function(e){
     if(e.which==13){
+        var folderID = $("#folderID").attr("data-id")
+        var fileID = $(this).attr('data-id')
+        console.log("/folder/" + folderID + "/file/" + fileID)
         console.log("Hit enter, Should call AJAX")
         event.preventDefault();
         if($(this).val() != ""){
             var name = $(this).val
-            console.log(name)
+            console.log("Name Here: " + name)
             $.ajax({
-                url: "/folder/" + folderID + "/edit",
-                type: "POST",
+                url: "/folder/" + folderID + "/file/" + fileID,
+                type: "PUT",
                 data: name,
                 contentType : "json",
                 success: function (r){
@@ -111,21 +128,9 @@ $("#fileDiv").delegate(".renameFileInput","keypress",function(e){
     }
 })
 
-$("#folderDiv").delegate(".folderName","click",function(e){
-    console.log("Click event for folderName")
-    var name = $(this).text()
-    $(this).text("")
-    console.log(name)
-    if($(this).has(".renameFolderInput").length == 0){
-        $(this).append("<input class='renameFolderInput' type='text' name='name' value='"+name+"'></input>")
-    }else{
-        console.log("already has an input element, no need to add input")
-    }
-})
-
-
 $("#folderDiv").delegate(".renameFolderInput","keypress",function(e){
     if(e.which==13){
+        var folderID = folder.attr('data-id')
         console.log("Hit enter, Should call AJAX")
         event.preventDefault();
         if($(this).val() != ""){

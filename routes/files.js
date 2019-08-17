@@ -131,20 +131,25 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
 
 router.put("/folder/:folder_id/file/:file_id",(req,res)=>{
     console.log("update request for file")
+    console.log(req.body)
     if(req.body){
         FileModel.findByIdAndUpdate(req.params.file_id,{name:req.body.name},(err,foundFile)=>{
             if(err){
                 console.log("Error with updating/finding file")
                 console.log(err)
-                res.redirect("back")
+                res.send({
+                    error: err
+                })
             }else{
                 console.log("updated the file, new name: " + foundFile.name)
-                res.redirect("/folder/"+req.params.folder_id)
+                res.send(foundFile)
             }
         })
     }else{
         console.log("Req.body does not exist")
-        res.redirect("back")
+        res.send({
+            error: "No req.body found"
+        })
     }
 })
 

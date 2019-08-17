@@ -14,7 +14,8 @@
     <div id="folderDiv">
         <% folder.childFolders.forEach((x)=>{ %>
         <%if(x){%>
-        <a class="folderName" href="/folder/<%=x._id%>" data-id="<%= x._id %>"><%= x.name %></a>
+        <div class="folderName" data-id="<%= x._id %>"><%= x.name %></div>
+        <a href="/folder/<%=x._id%>" data-id="<%= x._id %>">Link</a>
         <form action="/folder/<%=x._id%>?_method=DELETE" method="POST" data-id="<%= x._id%>">
             <button>
                 Delete
