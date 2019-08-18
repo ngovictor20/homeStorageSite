@@ -81,7 +81,8 @@ $("#uploadedDiv").on("click", function (e) {
 
 $("#fileDiv").delegate(".fileName","click",function(e){
     console.log("Click event for fileName")
-    var fileID = $(this).attr('data-id')
+    var obj = $(this)
+    var fileID = obj.attr('data-id')
     if($(this).has(".renameFileInput").length == 0){
         var name = $(this).text()
         $(this).text("")
@@ -94,6 +95,8 @@ $("#fileDiv").delegate(".fileName","click",function(e){
 
 $("#folderDiv").delegate(".folderName","click",function(e){
     console.log("Click event for folderName")
+    var obj = $(this)
+    var folderID = obj.attr('data-id')
     if($(this).has(".renameFolderInput").length == 0){
         var name = $(this).text()
         $(this).text("")
@@ -121,7 +124,7 @@ $("#fileDiv").delegate(".renameFileInput","keypress",function(e){
                 data: name,
                 contentType : "json",
                 success: function (r){
-
+                    console.log("result:" + r)
                 }
             })
         }
@@ -142,7 +145,7 @@ $("#folderDiv").delegate(".renameFolderInput","keypress",function(e){
                 data: name,
                 contentType : "json",
                 success: function (r){
-
+                    console.log("Result: " + r)
                 }
             })
         }

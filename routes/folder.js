@@ -81,13 +81,13 @@ router.delete("/folder/:folder_id", (req, res) => {
             console.log("ran into an error with finding folder")
         } else {
             console.log("Starting recursive function")
-            if(deletedDoc){
+            if (deletedDoc) {
                 console.log(deletedDoc)
                 delRecursive(deletedDoc).then(function (val) {
                     console.log("Finished recursive function:" + val)
                     res.send(val)
                 })
-            }else{
+            } else {
                 res.redirect("back")
             }
         }
@@ -98,22 +98,54 @@ router.delete("/folder/:folder_id", (req, res) => {
 //update
 //ajax
 router.post("/folder/:folder_id/edit", (req, res) => {
+    console.log("update request for file")
     console.log(req.body)
-    if(req.body.name){
-        Folder.findByIdAndUpdate(req.params.folder_id, {name: req.body.name}, (err, foundDoc) => {
+    if (req.body) {
+        Folder.findById(req.params.file_id).populate("parentFolder").exec((err, foundFile) => {
             if (err) {
-                console.log("Ran into error while updating")
+                console.log("Error with updating/finding file")
                 console.log(err)
+                res.send({
+                    error: err
+                })
             } else {
-                fs.rename(foundDoc.path,)
-                res.redirect("/folder/" + req.params.folder_id)
+                fs.exists(foundFile.path), (exists) => {
+                    if (exists) {
+                        console.log("time to change name")
+                        fs.rename(foundFile.path, foundFile.parentFolder.path + req.body.name, (renameError) => {
+                            if (renameError) {
+                                console.log("Error encountered when trying to call FS rename")
+                                res.send({
+                                    error: renameError
+                                })
+                            } else {
+                                console.log("rename successful, modifying file information in MongoDB")
+                                console.log("Before: " + foundFile)
+                                foundFile.name = req.body.name
+                                foundFile.path = foundFile.parentFolder.path + req.body.name
+                                console.log("saving document")
+                                foundFile.save()
+                                console.log("After: " + foundFile)
+                                res.send(foundFile)
+                            }
+                        })
+                    } else {
+                        console.log("ERROR, FILE DOES NOT EXIST")
+                        res.send({
+                            error: "File path does not exist" + foundFile.path
+                        })
+                    }
+                }
+                console.log("updated the file, new name: " + foundFile.name)
+                res.send(foundFile)
             }
         })
-    }else{
-        console.log("req.body.name is empty")
-        res.redirect("back")
+    } else {
+        console.log("Req.body does not exist")
+        res.send({
+            error: "No req.body found"
+        })
     }
-
 })
 
 
@@ -133,16 +165,16 @@ function delRecursive(fold) {
                 console.log("Find successful")
                 let childFolderList = []
                 console.log(doc.childFolders)
-                if(doc.childFolders){
+                if (doc.childFolders) {
                     doc.childFolders.forEach(function (folder) {
-                        if(folder){
+                        if (folder) {
                             console.log(folder)
                             console.log("Pushing recursive function into childFolderList Variable, id: " + folder._id)
                             childFolderList.push(delRecursive(folder))
                         }
                     })
                 }
-                if(childFolderList.length != 0){
+                if (childFolderList.length != 0) {
                     let fun = []
                     console.log("Child Folders Exist")
                     Promise.all(childFolderList).then(function (result) {
@@ -152,31 +184,31 @@ function delRecursive(fold) {
                                 fun.push(delFile(x))
                             })
                             Promise.all(fun).then(function (val) {
-                                fs.rmdir(doc.path,(rmDirErr)=>{
-                                    if(rmDirErr){
+                                fs.rmdir(doc.path, (rmDirErr) => {
+                                    if (rmDirErr) {
                                         console.log("FS: deleting folder error")
                                         console.log(rmDirErr)
-                                        reject("Failure: "+rmDirErr)
-                                    }else{
+                                        reject("Failure: " + rmDirErr)
+                                    } else {
                                         console.log("FS: Folder has been deleted successfully")
                                         resolve("Done:" + val)
                                     }
                                 })
                             })
                         } else {
-                            fs.rmdir(doc.path,(rmDirErr)=>{
-                                if(rmDirErr){
+                            fs.rmdir(doc.path, (rmDirErr) => {
+                                if (rmDirErr) {
                                     console.log("FS: deleting folder error")
                                     console.log(rmDirErr)
-                                    reject("Failure: "+rmDirErr)
-                                }else{
+                                    reject("Failure: " + rmDirErr)
+                                } else {
                                     console.log("FS: Folder has been deleted successfully")
                                     resolve("Done:" + doc.path)
                                 }
                             })
                         }
                     })
-                }else{
+                } else {
                     console.log("No child folders")
                     let fun = []
                     console.log("Child Files Check If Statement for:" + doc.path)
@@ -187,25 +219,25 @@ function delRecursive(fold) {
                             fun.push(delFile(x))
                         })
                         Promise.all(fun).then(function (val) {
-                            fs.rmdir(doc.path,(rmDirErr)=>{
-                                if(rmDirErr){
+                            fs.rmdir(doc.path, (rmDirErr) => {
+                                if (rmDirErr) {
                                     console.log("FS: deleting folder error")
                                     console.log(rmDirErr)
-                                    reject("Failure: "+rmDirErr)
-                                }else{
+                                    reject("Failure: " + rmDirErr)
+                                } else {
                                     console.log("FS: Folder has been deleted successfully")
                                     resolve("Done:" + doc.path)
                                 }
                             })
                         })
                     } else {
-                        console.log("No Child Files for: "+ doc.path)
-                        fs.rmdir(doc.path,(rmDirErr)=>{
-                            if(rmDirErr){
+                        console.log("No Child Files for: " + doc.path)
+                        fs.rmdir(doc.path, (rmDirErr) => {
+                            if (rmDirErr) {
                                 console.log("FS: deleting folder error")
                                 console.log(rmDirErr)
-                                reject("Failure: "+rmDirErr)
-                            }else{
+                                reject("Failure: " + rmDirErr)
+                            } else {
                                 console.log("FS: Folder has been deleted successfully")
                                 resolve("Done:" + doc.path)
                             }

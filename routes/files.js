@@ -11,18 +11,18 @@ const FileModel = require("../models/files")
 
 
 //get request, should stream the file into 
-router.get("/folder/:folder_id/file/:file_id", (req,res)=>{
+router.get("/folder/:folder_id/file/:file_id", (req, res) => {
     console.log("Folder Route")
-    FileModel.findById(req.params.file_id).populate("parentFolders").exec((err,doc)=>{
-        if(err){
+    FileModel.findById(req.params.file_id).populate("parentFolders").exec((err, doc) => {
+        if (err) {
             console.log(err)
-        }else{
+        } else {
             console.log("Found file in mongodb")
             console.log(doc.path)
-            res.download(doc.path,(error)=>{
-                if(error){
+            res.download(doc.path, (error) => {
+                if (error) {
                     console.log(error)
-                }else{
+                } else {
                     console.log("download")
                 }
             })
@@ -31,42 +31,42 @@ router.get("/folder/:folder_id/file/:file_id", (req,res)=>{
 })
 
 //create
-router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
+router.post("/folder/:folder_id/file", upload.single('file'), (req, res) => {
     console.log("Ajax Request")
     console.log(req.body)
     console.log("req file:")
     console.log(req.file)
     let fileSchema = {}
-    Folder.findById(req.params.folder_id).populate("childFiles").populate("childFolders").populate("parentFolder").exec((err,doc)=>{
-        if(err){
+    Folder.findById(req.params.folder_id).populate("childFiles").populate("childFolders").populate("parentFolder").exec((err, doc) => {
+        if (err) {
             console.log(err)
             console.log("whats going on here")
-            res.redirect("/folder/"+req.params.folder_id)
-        }else{
+            res.redirect("/folder/" + req.params.folder_id)
+        } else {
             console.log("Request.file")
             console.log(req.file)
-            if(req.file){
+            if (req.file) {
                 fileSchema = {
                     name: req.file.originalname,
-                    path: doc.path+req.file.originalname,
+                    path: doc.path + req.file.originalname,
                     fileSize: req.file.size,
                     parentFolder: doc._id
                 }
                 console.log(fileSchema)
                 console.log("Path")
-                console.log(doc.path+req.file.originalname+"\\")
+                console.log(doc.path + req.file.originalname + "\\")
                 //could create a custom storage engine so this is embedded in multer
-                fs.writeFile(doc.path+"\\"+req.file.originalname,req.file.buffer,(errorWrite)=>{
-                    if(errorWrite){
+                fs.writeFile(doc.path + "\\" + req.file.originalname, req.file.buffer, (errorWrite) => {
+                    if (errorWrite) {
                         console.log(errorWrite)
-                    }else{
+                    } else {
                         console.log("write completed")
-                        FileModel.create(fileSchema,(error,newFile)=>{
-                            if(error){
+                        FileModel.create(fileSchema, (error, newFile) => {
+                            if (error) {
                                 console.log("mongodb create file failed")
                                 console.log(err)
-                                res.redirect("/folder/"+req.params.folder_id)
-                            }else{
+                                res.redirect("/folder/" + req.params.folder_id)
+                            } else {
                                 console.log("pushing document")
                                 doc.childFiles.push(newFile._id)
                                 console.log("saving document")
@@ -78,38 +78,38 @@ router.post("/folder/:folder_id/file",upload.single('file'),(req,res)=>{
                         })
                     }
                 })
-            }else{
+            } else {
                 console.log("file not found")
-                res.redirect("/folder/"+req.params.folder_id)
-            }            
+                res.redirect("/folder/" + req.params.folder_id)
+            }
         }
-    })    
+    })
 })
 
 
-router.delete("/folder/:folder_id/file",(req,res)=>{
+router.delete("/folder/:folder_id/file", (req, res) => {
     console.log("Delete Request")
     console.log(req.body)//sits in req.body
     var file_id = req.body.id
-    Folder.findById(req.params.folder_id).populate("childFiles").exec((err,fold)=>{
-        if(err){
+    Folder.findById(req.params.folder_id).populate("childFiles").exec((err, fold) => {
+        if (err) {
             console.log(err)
-        }else{
-            var index = fold.childFiles.findIndex((element)=>{
+        } else {
+            var index = fold.childFiles.findIndex((element) => {
                 return element._id.equals(file_id)
             })
             console.log(index)
-            FileModel.findByIdAndDelete(file_id,(error,deletedFile)=>{
-                if(error){
+            FileModel.findByIdAndDelete(file_id, (error, deletedFile) => {
+                if (error) {
                     console.log(error)
                     res.redirect("back")
-                }else{
+                } else {
                     console.log(deletedFile)
-                    fs.unlink(deletedFile.path,(err)=>{
-                        if(err){
+                    fs.unlink(deletedFile.path, (err) => {
+                        if (err) {
                             console.log("error while deleting file")
                             console.log(err)
-                        }else{
+                        } else {
                             console.log("deleting file")
                             console.log("removing from parent document")
                             fold.childFiles.remove(index)
@@ -129,23 +129,50 @@ router.delete("/folder/:folder_id/file",(req,res)=>{
 })
 
 
-router.put("/folder/:folder_id/file/:file_id",(req,res)=>{
+router.put("/folder/:folder_id/file/:file_id", (req, res) => {
     console.log("update request for file")
     console.log(req.body)
-    if(req.body){
-        FileModel.findByIdAndUpdate(req.params.file_id,{name:req.body.name},(err,foundFile)=>{
-            if(err){
+    if (req.body) {
+        FileModel.findById(req.params.file_id).populate("parentFolder").exec((err, foundFile) => {
+            if (err) {
                 console.log("Error with updating/finding file")
                 console.log(err)
                 res.send({
                     error: err
                 })
-            }else{
+            } else {
+                fs.exists(foundFile.path), (exists) => {
+                    if (exists) {
+                        console.log("time to change name")
+                        fs.rename(foundFile.path,foundFile.parentFolder.path+req.body.name,(renameError)=>{
+                            if(renameError){
+                                console.log("Error encountered when trying to call FS rename")
+                                res.send({
+                                    error: renameError
+                                })
+                            }else{
+                                console.log("rename successful, modifying file information in MongoDB")
+                                console.log("Before: " +foundFile)
+                                foundFile.name = req.body.name
+                                foundFile.path = foundFile.parentFolder.path + req.body.name
+                                console.log("saving document")
+                                foundFile.save()
+                                console.log("After: " + foundFile)
+                                res.send(foundFile)
+                            }
+                        })
+                    } else {
+                        console.log("ERROR, FILE DOES NOT EXIST")
+                        res.send({
+                            error: "File path does not exist" + foundFile.path
+                        })
+                    }
+                }
                 console.log("updated the file, new name: " + foundFile.name)
                 res.send(foundFile)
             }
         })
-    }else{
+    } else {
         console.log("Req.body does not exist")
         res.send({
             error: "No req.body found"
@@ -195,18 +222,18 @@ router.put("/folder/:folder_id/file/:file_id",(req,res)=>{
 //                         })
 //                     }
 //                 })
-                
+
 //                 //res.render("../views/folder/renderFolder",{folder : doc})
 //             }else{
 //                 console.log("file not found")
 //                 res.redirect("/folder/"+req.params.folder_id)
 //             }
-            
+
 //         }
 //     })
 // })
 
-Array.prototype.remove = function(from, to) {
+Array.prototype.remove = function (from, to) {
     var rest = this.slice((to || from) + 1 || this.length);
     this.length = from < 0 ? this.length + from : from;
     return this.push.apply(this, rest);
