@@ -21,10 +21,11 @@
                 Delete
             </button>
         </form>
+        <div class="moveFolder" data-id="<%= x._id %>">Move</div>
         <%}%>
         <% }) %>
     </div>
-    
+
     <div id="fileDiv">
         <ul id="fileList">
             <% folder.childFiles.forEach((x)=>{ %>
@@ -62,6 +63,21 @@
         <ul id="uploadedList">
             <li>Hi</li>
         </ul>
+    </div>
+
+    <div id="moveFolderDialog">
+        
+        <div id="">
+            Folders
+            <ul id="moveFolderList">
+            </ul>
+        </div>
+        <div>
+            Files
+            <ul id="moveFileList">
+            </ul>
+        </div>
+        <div id="cancelMoveButton">Cancel</div>
     </div>
 
     <script type="text/javascript" src="../script/script.js"></script>

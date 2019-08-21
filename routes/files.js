@@ -129,9 +129,9 @@ router.delete("/folder/:folder_id/file", (req, res) => {
 })
 
 
-router.put("/folder/:folder_id/file/:file_id", (req, res) => {
+router.post("/folder/:folder_id/file/:file_id", (req, res) => {
     console.log("update request for file")
-    console.log(req.body)
+    console.log(req)
     if (req.body) {
         FileModel.findById(req.params.file_id).populate("parentFolder").exec((err, foundFile) => {
             if (err) {
@@ -141,10 +141,10 @@ router.put("/folder/:folder_id/file/:file_id", (req, res) => {
                     error: err
                 })
             } else {
-                fs.exists(foundFile.path), (exists) => {
+                fs.exists((foundFile.path), (exists) => {
                     if (exists) {
                         console.log("time to change name")
-                        fs.rename(foundFile.path,foundFile.parentFolder.path+req.body.name,(renameError)=>{
+                        fs.rename(foundFile.path,foundFile.parentFolder.path+req.body.fileName,(renameError)=>{
                             if(renameError){
                                 console.log("Error encountered when trying to call FS rename")
                                 res.send({
@@ -153,8 +153,8 @@ router.put("/folder/:folder_id/file/:file_id", (req, res) => {
                             }else{
                                 console.log("rename successful, modifying file information in MongoDB")
                                 console.log("Before: " +foundFile)
-                                foundFile.name = req.body.name
-                                foundFile.path = foundFile.parentFolder.path + req.body.name
+                                foundFile.name = req.body.fileName
+                                foundFile.path = foundFile.parentFolder.path + req.body.fileName
                                 console.log("saving document")
                                 foundFile.save()
                                 console.log("After: " + foundFile)
@@ -167,9 +167,9 @@ router.put("/folder/:folder_id/file/:file_id", (req, res) => {
                             error: "File path does not exist" + foundFile.path
                         })
                     }
-                }
-                console.log("updated the file, new name: " + foundFile.name)
-                res.send(foundFile)
+                })
+                // console.log("updated the file, new name: " + foundFile.name)
+                // res.send(foundFile)
             }
         })
     } else {

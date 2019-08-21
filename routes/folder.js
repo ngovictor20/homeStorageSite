@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const fs = require('fs');
+const fse = require('fs-extra')
 const multer = require('multer')
 const bodyParser = require('body-parser')
 const path = require("path");
@@ -97,47 +98,45 @@ router.delete("/folder/:folder_id", (req, res) => {
 
 //update
 //ajax
-router.post("/folder/:folder_id/edit", (req, res) => {
-    console.log("update request for file")
+router.post("/folder/:folder_id/", (req, res) => {
+    console.log("update request for folder")
     console.log(req.body)
     if (req.body) {
-        Folder.findById(req.params.file_id).populate("parentFolder").exec((err, foundFile) => {
+        Folder.findById(req.params.folder_id).populate("parentFolder").exec((err, foundfolder) => {
             if (err) {
-                console.log("Error with updating/finding file")
+                console.log("Error with updating/finding folder")
                 console.log(err)
                 res.send({
                     error: err
                 })
             } else {
-                fs.exists(foundFile.path), (exists) => {
+                fs.exists((foundfolder.path), (exists) => {
                     if (exists) {
                         console.log("time to change name")
-                        fs.rename(foundFile.path, foundFile.parentFolder.path + req.body.name, (renameError) => {
+                        fs.rename(foundfolder.path, foundfolder.parentFolder.path + req.body.folderName, (renameError) => {
                             if (renameError) {
                                 console.log("Error encountered when trying to call FS rename")
                                 res.send({
                                     error: renameError
                                 })
                             } else {
-                                console.log("rename successful, modifying file information in MongoDB")
-                                console.log("Before: " + foundFile)
-                                foundFile.name = req.body.name
-                                foundFile.path = foundFile.parentFolder.path + req.body.name
+                                console.log("rename successful, modifying folder information in MongoDB")
+                                console.log("Before: " + foundfolder)
+                                foundfolder.name = req.body.folderName
+                                foundfolder.path = foundfolder.parentFolder.path + req.body.folderName
                                 console.log("saving document")
-                                foundFile.save()
-                                console.log("After: " + foundFile)
-                                res.send(foundFile)
+                                foundfolder.save()
+                                console.log("After: " + foundfolder)
+                                res.send(foundfolder)
                             }
                         })
                     } else {
-                        console.log("ERROR, FILE DOES NOT EXIST")
+                        console.log("ERROR, folder DOES NOT EXIST")
                         res.send({
-                            error: "File path does not exist" + foundFile.path
+                            error: "folder path does not exist" + foundfolder.path
                         })
                     }
-                }
-                console.log("updated the file, new name: " + foundFile.name)
-                res.send(foundFile)
+                })
             }
         })
     } else {
@@ -147,10 +146,81 @@ router.post("/folder/:folder_id/edit", (req, res) => {
         })
     }
 })
+/*======================Move Folder Route=========================*/
+router.put("/folder/:folder_id/", (req, res) => {
+    console.log("MOVE FOLDER ROUTE")
+    console.log(req.body)
+    if (req.body) {
+        Folder.findById(req.params.folder_id).populate("childFolders").populate("childFiles").populate("parentFolder").exec((err, folder) => {
+            if (err) {
+                console.log(err)
+                res.send({ err: err })
+            } else {
+                Folder.findById(req.body.destFolderID).populate("childFolders").exec((destErr, destFolder) => {
+                    if (destErr) {
+                        console.log(destErr)
+                        res.send({ err: destErr })
+                    } else {
+                        console.log("Calling on FSE Move Function")
+                        fse.move(folder.path, destFolder.path)
+                            .then(() => {
+                                console.log('Success in moving. Time to modify the document')
+                                folder.path = destFolder.path
+                                console.log("find parent folder, pop the source folder")
+                               var index
+                                Folder.findById(folder.parentFolder._id).populate("childFolders").exec((parentErr,parentFolder)=>{
+                                    if(parentErr){
+                                        res.send({err:parentErr})
+                                    }else{
+                                        index = fold.childFolders.findIndex((element) => {
+                                            return element._id.equals(folder._id)
+                                        })
+                                        console.log("index in parent folder: "+index)
+                                        console.log("Removing source folder from parent folder")
+                                        parentFolder.childFolders.remove(index)
+                                        parentFolder.save()
+                                        console.log("changing parent folder of course folder")
+                                        folder.parentFolder = destFolder._id
+                                        folder.save()
+                                        console.log("pushing source folder into dest child folder")
+                                        destFolder.childFolders.push(folder._id)
+                                        destFolder.save()
+                                    }
+                                })
+                                
+                            })
+                            .catch(moveErr => {
+                                console.error(moveErr)
+                            })
+                        res.send(folder)
+                    }
+                })
+            }
+        })
+    } else {
+        res.send({
+            err: "REQ.BODY NOT FOUND."
+        })
+    }
+})
+
+/*====================send folder information to client in move dialog=====================*/
+
+router.post("/folder/:folder_id/move", (req, res) => {
+    Folder.findById(req.params.folder_id).populate("childFolders").populate("childFiles").exec((err, foundFolder) => {
+        if (err) {
+            console.log("error")
+        } else {
+            res.send(foundFolder)
+        }
+    })
+})
 
 
 
-//functions for folder deletion 
+
+
+/*=============FUNCTIONS FOR DELETION============== */
 
 function delRecursive(fold) {
     return new Promise(function (resolve, reject) {
@@ -273,7 +343,11 @@ function delFile(x) {
     })
 }
 
-
+Array.prototype.remove = function (from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+};
 
 
 module.exports = router

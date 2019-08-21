@@ -17,6 +17,7 @@ const hostname = '0.0.0.0';
 const port = 3000;
 const methodOverride = require("method-override")
 
+app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
