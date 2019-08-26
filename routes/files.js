@@ -180,19 +180,51 @@ router.post("/folder/:folder_id/file/:file_id", (req, res) => {
     }
 })
 
+//move file
 router.put("/folder/:folder_id/file/:file_id", (req, res) => {
+    console.log(req.url)
     console.log("MOVE FILE ROUTE")
     console.log(req.body)
     FileModel.findById(req.params.file_id).populate("parentFolder").exec().then((foundFile)=>{
+        console.log(foundFile)
         Folder.findById(req.body.destFolderID).populate("childFiles").exec().then((destFolder)=>{
-            
+            console.log("found dest folder")
+            fs.move(foundFile.path,destFolder.path+foundFile.name).then(()=>{
+                console.log("success moving")
+                Folder.findById(foundFile.parentFolder._id).populate("childFiles").exec().then((parentFolder)=>{
+                    var index = parentFolder.childFiles.findIndex((element) => {
+                        console.log(element._id)
+                        return foundFile._id.equals(element._id)
+                    })
+                    console.log("Searching for file in child Files. Index: " + index )
+                    parentFolder.childFiles.splice(index,1)
+                    console.log("Saving parent folder")
+                    parentFolder.save()
+                    foundFile.parentFolder = destFolder._id
+                    console.log("Saving moved file")
+                    foundFile.save()
+                    destFolder.childFiles.push(foundFile._id)
+                    console.log("Saved ")
+                    destFolder.save()
+                    console.log(parentFolder)
+                    console.log(foundFile)
+                    console.log(destFolder)
+                    res.send(foundFile)
+                })
+            }).catch((fsErr)=>{
+                console.log("FS ERROR")
+                console.log(fsErr)
+                res.send({err:fsErr})
+            })
+        }).catch((destErr)=>{
+            console.log("Ran into error")
+            res.send({err:destErr})
         })
     }).catch((err)=>{
         console.log("Ran into error")
         res.send({err:err})
     })
 })
-
 
 //copy file
 router.post("/folder/:folder_id/file/:file_id/copy", (req, res) => {
