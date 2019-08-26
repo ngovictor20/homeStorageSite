@@ -16,12 +16,10 @@
         <%if(x){%>
         <div class="folderName" data-id="<%= x._id %>"><%= x.name %></div>
         <a href="/folder/<%=x._id%>" data-id="<%= x._id %>">Link</a>
-        <form action="/folder/<%=x._id%>?_method=DELETE" method="POST" data-id="<%= x._id%>">
-            <button>
-                Delete
-            </button>
-        </form>
         <div class="moveFolder" data-id="<%= x._id %>">Move</div>
+        <form action="/folder/<%=x._id%>?_method=DELETE" method="POST" data-id="<%= x._id%>">
+            <button>Delete</button>
+        </form>
         <%}%>
         <% }) %>
     </div>
@@ -32,10 +30,10 @@
             <%if(x){%>
             <li>
                 <div class="fileName" data-id='<%=x._id%>'><%= x.name %></div>
-                <div class='delete' data-id='<%=x._id%>'>x</div>
-                <a href='/folder/<%=folder._id%>/<%=x._id%>' data-id='<%= x._id%>'>
-                    DL
-                </a>
+                <div class='delete' data-id='<%=x._id%>'>DELETE</div>
+                <div class='copy' data-id='<%=x._id%>'>COPY</div>
+                <div class="moveFile" data-id="<%= x._id %>">MOVE</div>
+                <a href='/folder/<%=folder._id%>/file/<%=x._id%>' data-id='<%= x._id%>'>DL</a>
             </li>
             <%}%>
             <% }) %>
@@ -66,7 +64,7 @@
     </div>
 
     <div id="moveFolderDialog">
-        
+
         <div id="">
             Folders
             <ul id="moveFolderList">
@@ -77,7 +75,7 @@
             <ul id="moveFileList">
             </ul>
         </div>
-        <div id="cancelMoveButton">Cancel</div>
+        <div id='cancelMoveButton'>Cancel</div>
     </div>
 
     <script type="text/javascript" src="../script/script.js"></script>

@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const fs = require('fs');
+const fs = require('fs-extra');
 const multer = require('multer')
 const bodyParser = require('body-parser')
 const path = require("path");
@@ -86,7 +86,7 @@ router.post("/folder/:folder_id/file", upload.single('file'), (req, res) => {
     })
 })
 
-
+//delete
 router.delete("/folder/:folder_id/file", (req, res) => {
     console.log("Delete Request")
     console.log(req.body)//sits in req.body
@@ -128,7 +128,7 @@ router.delete("/folder/:folder_id/file", (req, res) => {
     //res.send("Delete response")
 })
 
-
+//update
 router.post("/folder/:folder_id/file/:file_id", (req, res) => {
     console.log("update request for file")
     console.log(req)
@@ -144,15 +144,15 @@ router.post("/folder/:folder_id/file/:file_id", (req, res) => {
                 fs.exists((foundFile.path), (exists) => {
                     if (exists) {
                         console.log("time to change name")
-                        fs.rename(foundFile.path,foundFile.parentFolder.path+req.body.fileName,(renameError)=>{
-                            if(renameError){
+                        fs.rename(foundFile.path, foundFile.parentFolder.path + req.body.fileName, (renameError) => {
+                            if (renameError) {
                                 console.log("Error encountered when trying to call FS rename")
                                 res.send({
                                     error: renameError
                                 })
-                            }else{
+                            } else {
                                 console.log("rename successful, modifying file information in MongoDB")
-                                console.log("Before: " +foundFile)
+                                console.log("Before: " + foundFile)
                                 foundFile.name = req.body.fileName
                                 foundFile.path = foundFile.parentFolder.path + req.body.fileName
                                 console.log("saving document")
@@ -180,58 +180,61 @@ router.post("/folder/:folder_id/file/:file_id", (req, res) => {
     }
 })
 
+router.put("/folder/:folder_id/file/:file_id", (req, res) => {
+    console.log("MOVE FILE ROUTE")
+    console.log(req.body)
+    FileModel.findById(req.params.file_id).populate("parentFolder").exec().then((foundFile)=>{
+        Folder.findById(req.body.destFolderID).populate("childFiles").exec().then((destFolder)=>{
+            
+        })
+    }).catch((err)=>{
+        console.log("Ran into error")
+        res.send({err:err})
+    })
+})
 
-// router.post("/folder/:folder_id/file", upload.single('file'), (req,res)=>{
-//     console.log("Folder Route")
-//     let fileSchema = {}
-//     Folder.findById(req.params.folder_id).populate("childFiles").populate("childFolders").populate("parentFolder").exec((err,doc)=>{
-//         if(err){
-//             console.log(err)
-//             res.redirect("/folder/"+req.params.folder_id)
-//         }else{
-//             console.log(req.file)
-//             if(req.file){
-//                 fileSchema = {
-//                     name: req.file.originalname,
-//                     path: doc.path,
-//                     fileSize: req.file.size,
-//                     parentFolder: doc._id
-//                 }
-//                 console.log(fileSchema)
-//                 console.log("Path")
-//                 console.log(doc.path+req.file.originalname+"\\")
-//                 //could create a custom storage engine so this is embedded in multer
-//                 fs.writeFile(doc.path+"\\"+req.file.originalname,req.file.buffer,(err)=>{
-//                     if(err){
-//                         console.log(err)
-//                     }else{
-//                         console.log("write completed")
-//                         FileModel.create(fileSchema,(err,newFile)=>{
-//                             if(err){
-//                                 console.log("mongodb create file failed")
-//                                 console.log(err)
-//                                 res.redirect("/folder/"+req.params.folder_id)
-//                             }else{
-//                                 console.log("pushing document")
-//                                 doc.childFiles.push(newFile._id)
-//                                 console.log("saving document")
-//                                 doc.save()
-//                                 console.log(doc)
-//                                 res.redirect("/folder/"+req.params.folder_id)
-//                             }
-//                         })
-//                     }
-//                 })
 
-//                 //res.render("../views/folder/renderFolder",{folder : doc})
-//             }else{
-//                 console.log("file not found")
-//                 res.redirect("/folder/"+req.params.folder_id)
-//             }
+//copy file
+router.post("/folder/:folder_id/file/:file_id/copy", (req, res) => {
+    FileModel.findById(req.params.file_id).populate("parentFolder").exec((err, foundFile) => {
+        if (err) {
+            res.send({ err: err })
+        } else {
+            fs.pathExists(foundFile.parentFolder.path + "COPY OF " + foundFile.name).then(() => {
 
-//         }
-//     })
-// })
+            })
+            fs.copy(foundFile.path, foundFile.parentFolder.path + "COPY OF " + foundFile.name).then(() => {
+                var fileObject = {
+                    name: "COPY OF " + foundFile.name,
+                    path: foundFile.parentFolder.path + "COPY OF " + foundFile.name,
+                    fileSize: foundFile.fileSize,
+                    parentFolder: foundFile.parentFolder._id
+                }
+                FileModel.create(fileObject, (newerr, newFile) => {
+                    if (newerr) {
+                        console.log("Error with file creation in MongoDB")
+                        res.send({ err: newerr })
+                    } else {
+                        Folder.findById(foundFile.parentFolder).populate("childFiles").exec((parentErr, foundParentFile) => {
+                            if (parentErr) {
+                                console.log("Error with file creation in MongoDB")
+                                res.send({ err: parentErr })
+                            } else {
+                                foundParentFile.childFiles.push(newFile)
+                                foundParentFile.save()
+                                res.send(newFile)
+                            }
+                        })
+                    }
+                })
+            }).catch((fsError) => {
+                console.log(fsError)
+                res.send({ err: fsError })
+            })
+        }
+    })
+})
+
 
 Array.prototype.remove = function (from, to) {
     var rest = this.slice((to || from) + 1 || this.length);

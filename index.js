@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const fs = require('fs');
+const fs = require('fs-extra');
 const multer = require('multer')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')

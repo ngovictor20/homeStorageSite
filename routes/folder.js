@@ -1,7 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const fs = require('fs');
-const fse = require('fs-extra')
+const fs = require('fs-extra')
 const multer = require('multer')
 const bodyParser = require('body-parser')
 const path = require("path");
@@ -44,6 +43,7 @@ router.post("/folder/:folder_id/new", (req, res) => {
                 fs.mkdir(folder.path + req.body.folderName, (err) => {
                     if (err) {
                         console.log("error with mkdir")
+                        res.redirect("/folder/"+folder._id)
                     } else {
                         var newFolderObj = {
                             name: req.body.folderName,
@@ -146,6 +146,9 @@ router.post("/folder/:folder_id/", (req, res) => {
         })
     }
 })
+
+
+
 /*======================Move Folder Route=========================*/
 router.put("/folder/:folder_id/", (req, res) => {
     console.log("MOVE FOLDER ROUTE")
@@ -153,6 +156,7 @@ router.put("/folder/:folder_id/", (req, res) => {
     if (req.body) {
         Folder.findById(req.params.folder_id).populate("childFolders").populate("childFiles").populate("parentFolder").exec((err, folder) => {
             if (err) {
+                console.log("Error Finding")
                 console.log(err)
                 res.send({ err: err })
             } else {
@@ -162,26 +166,51 @@ router.put("/folder/:folder_id/", (req, res) => {
                         res.send({ err: destErr })
                     } else {
                         console.log("Calling on FSE Move Function")
-                        fse.move(folder.path, destFolder.path)
+                        fs.move(folder.path, destFolder.path+folder.name)
                             .then(() => {
                                 console.log('Success in moving. Time to modify the document')
                                 folder.path = destFolder.path
                                 console.log("find parent folder, pop the source folder")
                                var index
+                               let promiseMoveFunct = []
                                 Folder.findById(folder.parentFolder._id).populate("childFolders").exec((parentErr,parentFolder)=>{
                                     if(parentErr){
+                                        console.log("ERROR finding parent folder")
                                         res.send({err:parentErr})
                                     }else{
-                                        index = fold.childFolders.findIndex((element) => {
-                                            return element._id.equals(folder._id)
+                                        //ERROR IN THIS INDEX
+                                        index = parentFolder.childFolders.findIndex((element) => {
+                                            console.log(element._id)
+                                            return folder._id.equals(element._id)
                                         })
                                         console.log("index in parent folder: "+index)
                                         console.log("Removing source folder from parent folder")
-                                        parentFolder.childFolders.remove(index)
+                                        //parentFolder.childFolders.remove(index)
+                                        parentFolder.childFolders.splice(index,1)
+                                        console.log(parentFolder)
+                                        console.log("Right before calling save for parent folder")
                                         parentFolder.save()
                                         console.log("changing parent folder of course folder")
                                         folder.parentFolder = destFolder._id
+                                        folder.path = destFolder.path+folder.name+"\\"
                                         folder.save()
+                                        
+                                        if(folder.childFolders){
+                                            folder.childFolders.forEach((fold)=>{
+                                                promiseMoveFunct.push(modifyDocAfterMove(fold,folder.path+fold.name))
+                                            })
+                                        }
+                                        if(folder.childFiles){
+                                            folder.childFiles.forEach((file)=>{
+                                                promiseMoveFunct.push(modifyDocAfterMove(file,folder.path+file.name))
+                                            })
+                                        }
+                                        Promise.all(promiseMoveFunct).then((result)=>{
+                                            console.log("Finished modifying document paths")
+                                            console.log(result)
+                                        })
+
+                                        //foreach file 
                                         console.log("pushing source folder into dest child folder")
                                         destFolder.childFolders.push(folder._id)
                                         destFolder.save()
@@ -191,6 +220,9 @@ router.put("/folder/:folder_id/", (req, res) => {
                             })
                             .catch(moveErr => {
                                 console.error(moveErr)
+                                res.send({
+                                    err:moveErr
+                                })
                             })
                         res.send(folder)
                     }
@@ -210,6 +242,7 @@ router.post("/folder/:folder_id/move", (req, res) => {
     Folder.findById(req.params.folder_id).populate("childFolders").populate("childFiles").exec((err, foundFolder) => {
         if (err) {
             console.log("error")
+            res.send({err:err})
         } else {
             res.send(foundFolder)
         }
@@ -343,11 +376,19 @@ function delFile(x) {
     })
 }
 
-Array.prototype.remove = function (from, to) {
-    var rest = this.slice((to || from) + 1 || this.length);
-    this.length = from < 0 ? this.length + from : from;
-    return this.push.apply(this, rest);
-};
+/*========== FUNCTIONS FOR FILE MOVING ===============*/
+function modifyDocAfterMove(doc, destPath){
+    return new Promise((resolve,reject)=>{
+        if(doc.path){
+            doc.path = destPath
+            doc.save()
+            resolve(doc)
+        }else{
+            reject(file)
+        }
+    })
+}
+
 
 
 module.exports = router

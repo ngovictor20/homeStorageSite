@@ -159,7 +159,7 @@ $("#folderDiv").delegate(".renameFolderInput", "keypress", function (e) {
     }
 })
 
-$("#folderDiv").delegate(".moveFolder", "click", function (e) {
+$("#folderDiv,#fileDiv").delegate(".moveFolder,.moveFile", "click", function (e) {
     console.log("Move request for folder")
     var folder = $(this)
     var parentFolder = $("#folderID")
@@ -168,6 +168,7 @@ $("#folderDiv").delegate(".moveFolder", "click", function (e) {
     var moveDialog = $("#moveFolderDialog")
     var moveFolderList = $("#moveFolderList")
     var moveFileList = $("#moveFileList")
+    var ajaxURL
     if (folderID) {
         moveDialog.css("display","inline")
         console.log(folderID)
@@ -181,12 +182,18 @@ $("#folderDiv").delegate(".moveFolder", "click", function (e) {
                     console.log("ERROR: " + response.err)
                 } else {
                     console.log(response)
+                    moveFolderList.append("<div id='moveFolderBack' data-id='"+response.parentFolder+"'>back</div>")
                     response.childFolders.forEach(function (x) {
-                        moveFolderList.append("<li class='moveFolderItem'>" + x.name + "<div class='moveButton' data-id='" + x._id + "'>Move Here</div></li>")
+                        if(folder.has(".moveFile")){
+                            moveFolderList.append("<li class='moveFolderItem' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"' isFile='true'>Move Here</div></li>")
+                        }else{
+                            moveFolderList.append("<li class='moveFolderItem' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"'>Move Here</div></li>")
+                        }
                     })
                     response.childFiles.forEach(function (x) {
-                        moveFileList.append("<li class='moveFileItem'>" + x.name + "</li>")
+                        moveFileList.append("<li class='moveFileItem' data-id='"+x._id +"'>" + x.name + "</li>")
                     })
+                    moveDialog.append("<div class='moveHere' data-id'"+response._id+"'>Move To This Folder</div>")
                 }
             }
         })
@@ -198,13 +205,21 @@ $("#folderDiv").delegate(".moveFolder", "click", function (e) {
 
 $("#moveFolderDialog").delegate(".moveButton", "click", function (e) {
     var destFolderID = $(this).attr('data-id')
+    var srcFolderID = $(this).attr('src-id')
+    let ajaxURL
+    if($(this).attr('isFile')==="true"){
+        console.log("Is a file calling for move request")
+        ajaxURL = "/folder/" + srcFolderID+"/file/"+destFolderID
+    }else{
+        ajaxURL = "/folder/" + srcFolderID
+    }
     $.ajax({
-        url: "/folder/" + folderID,
+        url: ajaxURL,
         type: "PUT",
+        dataType: "json",
         data:{
             destFolderID: destFolderID
         },
-        dataType: "json",
         success: function (response) {
             if (response.err) {
                 console.log("ERROR: " + response.err)
@@ -220,4 +235,75 @@ $("#cancelMoveButton").on("click",function(e){
     console.log("cancel button event")
     var moveDialog = $("#moveFolderDialog")
     moveDialog.css("display","none")
+})
+
+$("#moveFolderDialog").delegate("#moveFolderBack,.moveFolderItem,.moveHere","click",function(e){
+    console.log("Back Button Was Pressed")
+    var folder = $(this)
+    var folderID = folder.attr('data-id')
+    var moveDialog = $("#moveFolderDialog")
+    var moveFolderList = $("#moveFolderList")
+    var moveFileList = $("#moveFileList")
+    if (folderID) {
+        moveDialog.css("display","inline")
+        console.log(folderID)
+        console.log("Calling AJAX")
+        $.ajax({
+            url: "/folder/" + folderID + "/move",
+            type: "POST",
+            dataType: "json",
+            success: function (response) {
+                if (response.err) {
+                    console.log("ERROR: " + response.err)
+                } else {
+                    console.log("Back button was pressed")
+                    console.log(response)
+                    moveFolderList.children().remove()
+                    moveFileList.children().remove()
+                    if(response.parentFolder != null){
+                        moveFolderList.append("<div id='moveFolderBack' data-id='"+response.parentFolder+"'>back</div>")
+                    }
+                    response.childFolders.forEach(function (x) {
+                        moveFolderList.append("<li class='moveFolderItem' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"'>Move Here</div></li>")
+                    })
+                    response.childFiles.forEach(function (x) {
+                        moveFileList.append("<li class='moveFileItem' data-id='"+x._id +"'>" + x.name + "</li>")
+                    })
+                }
+            }
+        })
+
+    } else {
+        console.log("ERROR, folderID does not exist")
+    }
+})
+
+
+
+
+$("#fileList").delegate('.copy','click',function(e){
+    var folder = $("#folderID")
+    var folderID = folder.attr('data-id')
+    var fileID = $(this).attr('data-id')
+    if(folderID){
+        console.log(folderID)
+        console.log(fileID)
+        console.log("/folder/" + folderID + "/file/"+fileID+"/copy")
+        console.log("Calling AJAX")
+        $.ajax({
+            url: "/folder/" + folderID + "/file/"+fileID+"/copy",
+            type: "POST",
+            dataType: "json",
+            success: function (response) {
+                if (response.err) {
+                    console.log("ERROR: " + response.err)
+                } else {
+                    console.log("Move Successful")
+                    console.log(response)
+                }
+            }
+        })
+    }else{
+        console.log("ERROR, folderID does not exist")
+    }
 })
