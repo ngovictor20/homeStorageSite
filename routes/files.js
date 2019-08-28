@@ -201,6 +201,7 @@ router.put("/folder/:folder_id/file/:file_id", (req, res) => {
                     console.log("Saving parent folder")
                     parentFolder.save()
                     foundFile.parentFolder = destFolder._id
+                    foundFile.path = destFolder.path+foundFile.name
                     console.log("Saving moved file")
                     foundFile.save()
                     destFolder.childFiles.push(foundFile._id)

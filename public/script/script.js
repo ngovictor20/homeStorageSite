@@ -206,10 +206,11 @@ $("#folderDiv,#fileDiv").delegate(".moveFolder,.moveFile", "click", function (e)
 $("#moveFolderDialog").delegate(".moveButton", "click", function (e) {
     var destFolderID = $(this).attr('data-id')
     var srcFolderID = $(this).attr('src-id')
+    var parentFolderID = $("#folderID").attr('data-id')
     let ajaxURL
     if($(this).attr('isFile')==="true"){
         console.log("Is a file calling for move request")
-        ajaxURL = "/folder/" + srcFolderID+"/file/"+destFolderID
+        ajaxURL = "/folder/" + parentFolderID+"/file/"+srcFolderID
     }else{
         ajaxURL = "/folder/" + srcFolderID
     }
