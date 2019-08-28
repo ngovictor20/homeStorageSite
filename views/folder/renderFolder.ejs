@@ -3,14 +3,15 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/styles.css">
+    <link rel="stylesheet" type="text/css" href="../semantic/semantic.min.css">
 </head>
 
-<body>
+<body class="ui container">
     <% if(folder.parentFolder){ %>
     <a href="/folder/<%= folder.parentFolder._id %>">Back</a>
     <% } %>
 
-    <h1 data-id="<%=folder._id%>" id="folderID"><%= folder.name %></h1>
+    <div class="ui header huge" data-id="<%=folder._id%>" id="folderID"><%= folder.name %></div>
     <div id="folderDiv">
         <% folder.childFolders.forEach((x)=>{ %>
         <%if(x){%>
@@ -25,19 +26,19 @@
     </div>
 
     <div id="fileDiv">
-        <ul id="fileList">
+        <div id="fileList" class="ui horizontal list">
             <% folder.childFiles.forEach((x)=>{ %>
             <%if(x){%>
-            <li>
+            <div class="ui item">
                 <div class="fileName" data-id='<%=x._id%>'><%= x.name %></div>
                 <div class='delete' data-id='<%=x._id%>'>DELETE</div>
                 <div class='copy' data-id='<%=x._id%>'>COPY</div>
                 <div class="moveFile" data-id="<%= x._id %>">MOVE</div>
                 <a href='/folder/<%=folder._id%>/file/<%=x._id%>' data-id='<%= x._id%>'>DL</a>
-            </li>
+            </div>
             <%}%>
             <% }) %>
-        </ul>
+        </div>
     </div>
 
 
@@ -49,11 +50,16 @@
         </form>
     </div>
 
-    <div>
+    <div class="ui form">
         <form action="/folder/<%=folder._id%>/new" method="POST" id="folderUpload">
-            <label>New Folder</label>
-            <input type="text" name="folderName" id="folderName">
-            <button>submit</button>
+            <div class="ui labeled action input">
+                <div class="ui label">New Folder</div>
+                <div class = "ui input">
+                    <input type="text" name="folderName" id="folderName">
+                </div>
+                <button class="ui button">submit</button>
+            </div>
+            
         </form>
     </div>
 
