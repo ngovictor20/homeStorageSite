@@ -12,17 +12,22 @@
     <% } %>
 
     <div class="ui header huge" data-id="<%=folder._id%>" id="folderID"><%= folder.name %></div>
+
     <div id="folderDiv">
-        <% folder.childFolders.forEach((x)=>{ %>
-        <%if(x){%>
-        <div class="folderName" data-id="<%= x._id %>"><%= x.name %></div>
-        <a href="/folder/<%=x._id%>" data-id="<%= x._id %>">Link</a>
-        <div class="moveFolder" data-id="<%= x._id %>">Move</div>
-        <form action="/folder/<%=x._id%>?_method=DELETE" method="POST" data-id="<%= x._id%>">
-            <button>Delete</button>
-        </form>
-        <%}%>
-        <% }) %>
+        <div id="folderList" class="ui horizontal list">
+            <% folder.childFolders.forEach((x)=>{ %>
+            <%if(x){%>
+            <div class="ui item">
+                <div class="folderName" data-id="<%= x._id %>"><%= x.name %></div>
+                <a href="/folder/<%=x._id%>" data-id="<%= x._id %>">Link</a>
+                <div class="moveFolder" data-id="<%= x._id %>">Move</div>
+                <form action="/folder/<%=x._id%>?_method=DELETE" method="POST" data-id="<%= x._id%>">
+                    <button>Delete</button>
+                </form>
+            </div>
+            <%}%>
+            <% }) %>
+        </div>
     </div>
 
     <div id="fileDiv">
@@ -42,7 +47,7 @@
     </div>
 
 
-    <div>
+    <div class="ui form">
         <form enctype="multipart/form-data" id="fileUpload">
             <label>Upload File</label>
             <input type="file" name="file" id="fileField">
@@ -52,14 +57,14 @@
 
     <div class="ui form">
         <form action="/folder/<%=folder._id%>/new" method="POST" id="folderUpload">
-            <div class="ui labeled action input">
+            <div class="ui labeled  action input">
                 <div class="ui label">New Folder</div>
-                <div class = "ui input">
+                <div class="ui input">
                     <input type="text" name="folderName" id="folderName">
                 </div>
                 <button class="ui button">submit</button>
             </div>
-            
+
         </form>
     </div>
 
@@ -70,7 +75,6 @@
     </div>
 
     <div id="moveFolderDialog">
-
         <div id="">
             Folders
             <ul id="moveFolderList">
