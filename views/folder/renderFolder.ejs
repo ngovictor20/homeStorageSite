@@ -8,7 +8,9 @@
 
 <body class="ui container">
     <% if(folder.parentFolder){ %>
-    <a href="/folder/<%= folder.parentFolder._id %>">Back</a>
+    <a href="/folder/<%= folder.parentFolder._id %>"><i class="angle right icon large">
+            <div class="ui header"><%=folder.parentFolder.name%></div>
+        </i></a>
     <% } %>
 
     <div class="ui header huge" data-id="<%=folder._id%>" id="folderID"><%= folder.name %></div>
@@ -67,26 +69,25 @@
     </div>
 
     <div id="uploadedDiv">
-        <ul id="uploadedList">
-            <li>Hi</li>
-        </ul>
+        <div id="uploadedList" class="ui list">
+            <div class="ui header">Uploaded List</div>
+        </div>
     </div>
 
-    <div id="moveFolderDialog">
-        <div id="">
-            <div class="ui header">Folders</div>
-            <div id="moveFolderList" class="ui list">
-            </div>
+    <div id="moveFolderDialog" class="ui small modal">
+        <div class="ui header">Folders</div>
+        <div id="moveFolderList" class="ui list">
         </div>
-        <div>
-            <div class="ui header">Files</div>
-            <div id="moveFileList" class="ui list">
-            </div>
+        <div class="ui header">Files</div>
+        <div id="moveFileList" class="ui list"></div>
+        <div class="actions">
+            <div id="moveDialogCancel" class="ui cancel button">Cancel Move</div>
         </div>
-        <div id='cancelMoveButton'>Cancel</div>
     </div>
 
+    <script type="text/javascript" src="../semantic/semantic.min.js"></script>
     <script type="text/javascript" src="../script/script.js"></script>
+
 </body>
 
 </html>
