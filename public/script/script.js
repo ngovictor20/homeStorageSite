@@ -190,9 +190,9 @@ $("#folderDiv,#fileDiv").delegate(".moveFolder,.moveFile", "click", function (e)
                     moveFolderList.append("<div id='moveFolderBack' data-id='"+response.parentFolder+"'>back</div>")
                     response.childFolders.forEach(function (x) {
                         if(folder.has(".moveFile")){
-                            moveFolderList.append("<div class='item'><div class='moveFolderItem item' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"' isFile='true'>Move Here</div></div></div>")
+                            moveFolderList.append("<div class='item'><div class='moveFolderItem item' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"' isFile='true'>Move Here</div></div></div><br>")
                         }else{
-                            moveFolderList.append("<div class='item'><div class='moveFolderItem' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"'>Move Here</div></div></div>")
+                            moveFolderList.append("<div class='item'><div class='moveFolderItem' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"'>Move Here</div></div></div><br>")
                         }
                     })
                     response.childFiles.forEach(function (x) {
