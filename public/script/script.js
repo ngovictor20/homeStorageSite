@@ -102,7 +102,7 @@ $("#folderDiv").delegate(".folderName", "click", function (e) {
         var name = $(this).text()
         $(this).text("")
         console.log(name)
-        $(this).append("<input class='renameFolderInput' type='text' name='name' value='" + name + "' data-id='" + folderID + "'></input>")
+        $(this).append("<div class='ui input'><input class='renameFolderInput' type='text' name='name' value='" + name + "' data-id='" + folderID + "'></input></div>")
     } else {
         console.log("already has an input element, no need to add input")
     }
@@ -321,4 +321,16 @@ $("#fileList").delegate('.copy','click',function(e){
     }else{
         console.log("ERROR, folderID does not exist")
     }
+})
+
+
+$("#folderList").delegate(".folderLink","dblclick",function(e){
+    console.log("Double clikc event for folder link")
+    var folder = $(this)
+    var folderID = folder.attr('data-id')
+    var url = "/folder/"+folderID
+    console.log(url)
+    jQuery.get(url,function(data){
+        alert("Load was performed")
+    })
 })

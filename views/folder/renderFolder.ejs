@@ -14,14 +14,20 @@
     <% } %>
 
     <div class="ui header huge" data-id="<%=folder._id%>" id="folderID"><%= folder.name %></div>
-
+    <div class="ui header large"><i class='icon folder'></i>Folders</div>
     <div id="folderDiv">
-        <div id="folderList" class="ui horizontal list">
+        <div id="folderList" class="ui horizontal segments">
             <% folder.childFolders.forEach((x)=>{ %>
             <%if(x){%>
-            <div class="ui item">
-                <div class="folderName" data-id="<%= x._id %>"><%= x.name %></div>
-                <a href="/folder/<%=x._id%>" data-id="<%= x._id %>">Link</a>
+            <div class="ui segment">
+                <a href="/folder/<%=x._id%>" data-id="<%= x._id %>">
+                    <i class='icon folder open outline big'></i>
+                    <div class="folderName ui header" data-id="<%= x._id %>"><%= x.name %></div>
+                </a>
+                <div class='folderLink' data-id="<%= x._id %>">
+                    <i class='icon folder open outline big'></i>
+                    <div class="folderName ui header" data-id="<%= x._id %>"><%= x.name %></div>
+                </div>
                 <div class="moveFolder" data-id="<%= x._id %>">Move</div>
                 <form action="/folder/<%=x._id%>?_method=DELETE" method="POST" data-id="<%= x._id%>">
                     <button>Delete</button>
@@ -32,11 +38,13 @@
         </div>
     </div>
 
+    <div class="ui header large"><i class='icon file big'></i>Files</div>
     <div id="fileDiv">
-        <div id="fileList" class="ui horizontal list">
+        <div id="fileList" class="ui horizontal segments">
             <% folder.childFiles.forEach((x)=>{ %>
             <%if(x){%>
-            <div class="ui item">
+            <div class="ui segment">
+                <i class='icon file outline big'></i>
                 <div class="fileName" data-id='<%=x._id%>'><%= x.name %></div>
                 <div class='delete' data-id='<%=x._id%>'>DELETE</div>
                 <div class='copy' data-id='<%=x._id%>'>COPY</div>
