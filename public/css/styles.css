@@ -7,3 +7,27 @@ body,html{
     margin:0;
     height:100%;
 }
+
+#menu {
+    display: none;
+    position: absolute;
+    padding: 10px;
+    background-color: #ddd;
+    border: 1px solid #000;
+}
+
+.focus{
+    background-color: lightskyblue;
+    border-color:white;
+    color:blue;
+    
+}
+
+#uploadedDiv{
+    display:none;
+}
+
+.folderName,.fileName{
+    display: inline-block;
+    vertical-align: middle;
+}

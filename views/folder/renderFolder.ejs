@@ -6,95 +6,111 @@
     <link rel="stylesheet" type="text/css" href="../semantic/semantic.min.css">
 </head>
 
-<body class="ui container">
-    <% if(folder.parentFolder){ %>
-    <a href="/folder/<%= folder.parentFolder._id %>"><i class="angle right icon large">
-            <div class="ui header"><%=folder.parentFolder.name%></div>
-        </i></a>
-    <% } %>
+<body>
+    <div class="ui top attached menu huge">
+        <div class="ui icon item">
+            <i class="archive icon"></i>
+            <span>
+                <div class="ui header small">Drive</div>
+            </span>
+        </div>
+        <div class='right item'>Right</div>
+    </div>
 
-    <div class="ui header huge" data-id="<%=folder._id%>" id="folderID"><%= folder.name %></div>
-    <div class="ui header large"><i class='icon folder'></i>Folders</div>
-    <div id="folderDiv">
-        <div id="folderList" class="ui horizontal segments">
-            <% folder.childFolders.forEach((x)=>{ %>
-            <%if(x){%>
-            <div class="ui segment">
-                <a href="/folder/<%=x._id%>" data-id="<%= x._id %>">
-                    <i class='icon folder open outline big'></i>
-                    <div class="folderName ui header" data-id="<%= x._id %>"><%= x.name %></div>
-                </a>
-                <div class='folderLink' data-id="<%= x._id %>">
-                    <i class='icon folder open outline big'></i>
-                    <div class="folderName ui header" data-id="<%= x._id %>"><%= x.name %></div>
+
+
+
+
+
+
+        <div class="ui container">
+            <% if(folder.parentFolder){ %>
+            <a href="/folder/<%= folder.parentFolder._id %>"><i class="angle right icon large">
+                    <div class="ui header"><%=folder.parentFolder.name%></div>
+                </i></a>
+            <% } %>
+
+            <div class="ui header huge" data-id="<%=folder._id%>" id="folderID"><%= folder.name %></div>
+            <div class="ui header large"><i class='icon folder'></i>Folders</div>
+            <div id="folderDiv">
+                <div id="folderList" class="ui segments">
+                    <% folder.childFolders.forEach((x)=>{ %>
+                    <%if(x){%>
+                    <div class="ui segment folderItem" data-id="<%= x._id %>">
+                        <div class='folderLink' data-id="<%= x._id %>">
+                            <i class='icon folder open outline big'></i>
+                            <span>
+                                <div class="folderName ui header" data-id="<%= x._id %>"><%= x.name %></div>
+                            </span>
+                        </div>
+                    </div>
+                    <%}%>
+            <% }) %>
                 </div>
-                <div class="moveFolder" data-id="<%= x._id %>">Move</div>
-                <form action="/folder/<%=x._id%>?_method=DELETE" method="POST" data-id="<%= x._id%>">
-                    <button>Delete</button>
+            </div>
+
+            <div class="ui header large"><i class='icon file big'></i>Files</div>
+            <div id="fileDiv">
+                <div id="fileList" class="ui segments">
+                    <% folder.childFiles.forEach((x)=>{ %>
+                    <%if(x){%>
+                    <div class="ui segment fileItem" data-id='<%=x._id%>'>
+                        <i class='icon file outline big'></i>
+                        <span>
+                            <div class="fileName ui header" data-id='<%=x._id%>'><%= x.name %></div>
+                        </span>
+                    </div>
+                    <%}%>
+            <% }) %>
+                </div>
+            </div>
+
+            <div class="ui form">
+                <form enctype="multipart/form-data" id="fileUpload">
+                    <label>Upload File</label>
+                    <input type="file" name="file" id="fileField">
+                    <button>submit</button>
                 </form>
             </div>
-            <%}%>
-            <% }) %>
-        </div>
-    </div>
 
-    <div class="ui header large"><i class='icon file big'></i>Files</div>
-    <div id="fileDiv">
-        <div id="fileList" class="ui horizontal segments">
-            <% folder.childFiles.forEach((x)=>{ %>
-            <%if(x){%>
-            <div class="ui segment">
-                <i class='icon file outline big'></i>
-                <div class="fileName" data-id='<%=x._id%>'><%= x.name %></div>
-                <div class='delete' data-id='<%=x._id%>'>DELETE</div>
-                <div class='copy' data-id='<%=x._id%>'>COPY</div>
-                <div class="moveFile" data-id="<%= x._id %>">MOVE</div>
-                <a href='/folder/<%=folder._id%>/file/<%=x._id%>' data-id='<%= x._id%>'>DL</a>
+            <div class="ui form">
+                <form action="/folder/<%=folder._id%>/new" method="POST" id="folderUpload">
+                    <div class="ui labeled  action input">
+                        <div class="ui label">New Folder</div>
+                        <div class="ui input">
+                            <input type="text" name="folderName" id="folderName">
+                        </div>
+                        <button class="ui button">submit</button>
+                    </div>
+                </form>
             </div>
-            <%}%>
-            <% }) %>
-        </div>
-    </div>
 
-    <div class="ui form">
-        <form enctype="multipart/form-data" id="fileUpload">
-            <label>Upload File</label>
-            <input type="file" name="file" id="fileField">
-            <button>submit</button>
-        </form>
-    </div>
-
-    <div class="ui form">
-        <form action="/folder/<%=folder._id%>/new" method="POST" id="folderUpload">
-            <div class="ui labeled  action input">
-                <div class="ui label">New Folder</div>
-                <div class="ui input">
-                    <input type="text" name="folderName" id="folderName">
+            <div id="uploadedDiv">
+                <div id="uploadedList" class="ui list">
+                    <div class="ui header">Uploaded List</div>
                 </div>
-                <button class="ui button">submit</button>
             </div>
-        </form>
-    </div>
 
-    <div id="uploadedDiv">
-        <div id="uploadedList" class="ui list">
-            <div class="ui header">Uploaded List</div>
-        </div>
-    </div>
+            <div id="moveFolderDialog" class="ui small modal">
+                <div class="ui header">Folders</div>
+                <div id="moveFolderList" class="ui list">
+                </div>
+                <div class="ui header">Files</div>
+                <div id="moveFileList" class="ui list"></div>
+                <div class="actions">
+                    <div id="moveDialogCancel" class="ui cancel button">Cancel Move</div>
+                </div>
+            </div>
 
-    <div id="moveFolderDialog" class="ui small modal">
-        <div class="ui header">Folders</div>
-        <div id="moveFolderList" class="ui list">
-        </div>
-        <div class="ui header">Files</div>
-        <div id="moveFileList" class="ui list"></div>
-        <div class="actions">
-            <div id="moveDialogCancel" class="ui cancel button">Cancel Move</div>
-        </div>
-    </div>
+            <div id="menu" class="ui segments">
+            </div>
 
-    <script type="text/javascript" src="../semantic/semantic.min.js"></script>
-    <script type="text/javascript" src="../script/script.js"></script>
+            <div id="renameDialog" class="ui modal container">
+
+            </div>
+        </div>
+        <script type="text/javascript" src="../semantic/semantic.min.js"></script>
+        <script type="text/javascript" src="../script/script.js"></script>
 
 </body>
 

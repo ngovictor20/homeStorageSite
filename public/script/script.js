@@ -51,7 +51,7 @@ $("#fileUpload").submit(function (e) {
 });
 
 //probably an issue with putting getting the folderID here
-$("#fileDiv").delegate(".delete", "click", function (e) {
+$("#menu").delegate(".delete", "click", function (e) {
     var folder = $("#folderID")
     var folderID = folder.attr('data-id')
     console.log("click")
@@ -64,11 +64,11 @@ $("#fileDiv").delegate(".delete", "click", function (e) {
             if (r) {
                 console.log(r)
                 console.log("removing element")
-                console.log($(this).parent())
-                $(this).parent().remove()
-                setTimeout(function () {
-                    console.log("hi")
-                }, 5000)
+                // console.log($(this).parent())
+                // $(this).parent().remove()
+                // setTimeout(function () {
+                //     console.log("hi")
+                // }, 5000)
             }
         }
     })
@@ -98,7 +98,7 @@ $("#folderDiv").delegate(".folderName", "click", function (e) {
     var obj = $(this)
     var folderID = obj.attr('data-id')
     console.log(folderID)
-    if ($(this).has(".renameFolderInput").length == 0) {
+    if ($(this).hasClass(".renameFolderInput")) {
         var name = $(this).text()
         $(this).text("")
         console.log(name)
@@ -109,7 +109,7 @@ $("#folderDiv").delegate(".folderName", "click", function (e) {
 })
 
 
-$("#fileDiv").delegate(".renameFileInput", "keypress", function (e) {
+$("#renameDialog").delegate(".renameFileInput", "keypress", function (e) {
     if (e.which == 13) {
         var folderID = $("#folderID").attr("data-id")
         var fileID = $(this).attr('data-id')
@@ -134,7 +134,7 @@ $("#fileDiv").delegate(".renameFileInput", "keypress", function (e) {
     }
 })
 
-$("#folderDiv").delegate(".renameFolderInput", "keypress", function (e) {
+$("#renameDialog").delegate(".renameFolderInput", "keypress", function (e) {
     if (e.which == 13) {
         var folder = $(this)
         var folderID = folder.attr('data-id')
@@ -159,7 +159,8 @@ $("#folderDiv").delegate(".renameFolderInput", "keypress", function (e) {
     }
 })
 
-$("#folderDiv,#fileDiv").delegate(".moveFolder,.moveFile", "click", function (e) {
+//$("#folderDiv,#fileDiv").delegate(".moveFolder,.moveFile", "click", function (e) {
+$("#menu").delegate(".moveFolder,.moveFile", "click", function (e) {
     console.log("Move request for folder")
     var folder = $(this)
     var parentFolder = $("#folderID")
@@ -296,7 +297,7 @@ $("#moveFolderDialog").delegate("#moveFolderBack,.moveFolderItem,.moveHere","cli
 
 
 
-$("#fileList").delegate('.copy','click',function(e){
+$("#menu").delegate('.copy','click',function(e){
     var folder = $("#folderID")
     var folderID = folder.attr('data-id')
     var fileID = $(this).attr('data-id')
@@ -330,7 +331,72 @@ $("#folderList").delegate(".folderLink","dblclick",function(e){
     var folderID = folder.attr('data-id')
     var url = "/folder/"+folderID
     console.log(url)
-    jQuery.get(url,function(data){
-        alert("Load was performed")
-    })
+    window.location.replace(url)
+})
+
+//Focus on an item
+$(".folderItem,.fileItem").on("click")
+
+
+
+
+
+//CONTEXT MENU STUFF
+$(".folderItem,.fileItem").bind("contextmenu",function(e){
+    console.log("Context Menu")
+    var menu = $('#menu')
+    var doc = $(this)
+    var docID = doc.attr('data-id')
+    menu.children().remove()
+    if(doc.hasClass("folderItem")){
+        console.log("Folder Item")
+        menu.append("<div class='moveFolder' data-id='"+docID+"'>Move</div>\
+        <form action='/folder/"+docID+"?_method=DELETE' method='POST' data-id='"+docID+"'><button>Delete</button></form>\
+        <div class='renameFolder' data-id='"+docID+"'>Rename Folder</div>")
+    }else if(doc.hasClass("fileItem")){
+        console.log("File Item")
+        menu.append("<div class='delete' data-id='"+docID+"'>Delete File</div>\
+        <div class='copy' data-id='"+docID+"'>Copy File</div>\
+        <div class='renameFile' data-id='"+docID+"'>Rename File</div>\
+        <div class='moveFile' data-id="+docID+">Move File</div>\
+        <a href='/folder/"+docID+"/file/"+docID+"' data-id='"+docID+"'>Download File</a>")
+    }
+    menu.css({
+        top: e.pageY+'px',
+        left: e.pageX+'px'
+    }).show();
+    
+    return false;
+})
+
+$(document).ready(function() {
+
+    $('#menu').click(function() {
+        $('#menu').hide();
+    });
+    $(document).click(function() {
+        $('#menu').hide();
+    });
+
+});
+
+
+$("#menu").delegate(".renameFile,.renameFolder","click",function(e){
+    var menu = $("#menu")
+    var doc = $(this)
+    var docID = doc.attr('data-id')
+    var renameDialog = $("#renameDialog")
+    console.log(doc)
+    renameDialog.children().remove()
+    if(doc.hasClass("renameFolder")){
+        console.log("rename folder")
+        renameDialog.append("<div class='ui header'>Rename</div>\
+        <div class='ui input'><input class='renameFolderInput' type='text' name='name' data-id='" + docID + "'></input></div>")
+    }else if(doc.hasClass("renameFile")){
+        console.log("rename folder")
+        renameDialog.append("<div class='ui header'>Rename</div>\
+        <div class='ui input'><input class='renameFileInput' type='text' name='name' data-id='" + docID + "'></input></div>")
+    }
+    
+    renameDialog.modal('show')
 })
