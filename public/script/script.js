@@ -78,35 +78,35 @@ $("#uploadedDiv").on("click", function (e) {
     $("#uploadedList").css("display", "none")
 })
 
-$("#fileDiv").delegate(".fileName", "click", function (e) {
-    console.log("Click event for fileName")
-    var obj = $(this)
-    var fileID = obj.attr('data-id')
-    console.log(fileID)
-    if ($(this).has(".renameFileInput").length == 0) {
-        var name = $(this).text()
-        $(this).text("")
-        console.log(name)
-        $(this).append("<input class='renameFileInput' type='text' name='name' value='" + name + "' data-id='" + fileID + "'></input>")
-    } else {
-        console.log("already has an input element, no need to add input")
-    }
-})
+// $("#fileDiv").delegate(".fileName", "click", function (e) {
+//     console.log("Click event for fileName")
+//     var obj = $(this)
+//     var fileID = obj.attr('data-id')
+//     console.log(fileID)
+//     if ($(this).has(".renameFileInput").length == 0) {
+//         var name = $(this).text()
+//         $(this).text("")
+//         console.log(name)
+//         $(this).append("<input class='renameFileInput' type='text' name='name' value='" + name + "' data-id='" + fileID + "'></input>")
+//     } else {
+//         console.log("already has an input element, no need to add input")
+//     }
+// })
 
-$("#folderDiv").delegate(".folderName", "click", function (e) {
-    console.log("Click event for folderName")
-    var obj = $(this)
-    var folderID = obj.attr('data-id')
-    console.log(folderID)
-    if ($(this).hasClass(".renameFolderInput")) {
-        var name = $(this).text()
-        $(this).text("")
-        console.log(name)
-        $(this).append("<div class='ui input'><input class='renameFolderInput' type='text' name='name' value='" + name + "' data-id='" + folderID + "'></input></div>")
-    } else {
-        console.log("already has an input element, no need to add input")
-    }
-})
+// $("#folderDiv").delegate(".folderName", "click", function (e) {
+//     console.log("Click event for folderName")
+//     var obj = $(this)
+//     var folderID = obj.attr('data-id')
+//     console.log(folderID)
+//     if ($(this).hasClass(".renameFolderInput")) {
+//         var name = $(this).text()
+//         $(this).text("")
+//         console.log(name)
+//         $(this).append("<div class='ui input'><input class='renameFolderInput' type='text' name='name' value='" + name + "' data-id='" + folderID + "'></input></div>")
+//     } else {
+//         console.log("already has an input element, no need to add input")
+//     }
+// })
 
 
 $("#renameDialog").delegate(".renameFileInput", "keypress", function (e) {
@@ -399,4 +399,14 @@ $("#menu").delegate(".renameFile,.renameFolder","click",function(e){
     }
     
     renameDialog.modal('show')
+})
+
+
+//NAV BAR BUTTONS
+$("#newFileNavButton").on("click",function(e){
+    $("#newFileDialog").modal('show')
+})
+
+$("#newFolderNavButton").on("click",function(e){
+    $("#newFolderDialog").modal('show')
 })
