@@ -334,11 +334,17 @@ $("#folderList").delegate(".folderLink","dblclick",function(e){
     window.location.replace(url)
 })
 
+$("body").on("click",function(e){
+    console.log("Remove focus")
+    $(".focus").removeClass("focus")
+})
+
+
 //Focus on an item
-$(".folderItem,.fileItem").on("click")
-
-
-
+$(".folderItem,.fileItem").on("click",function(e){
+    $(".focus").removeClass("focus")
+    $(this).addClass("focus")
+})
 
 
 //CONTEXT MENU STUFF
@@ -391,11 +397,13 @@ $("#menu").delegate(".renameFile,.renameFolder","click",function(e){
     if(doc.hasClass("renameFolder")){
         console.log("rename folder")
         renameDialog.append("<div class='ui header'>Rename</div>\
-        <div class='ui input'><input class='renameFolderInput' type='text' name='name' data-id='" + docID + "'></input></div>")
+        <div class='ui input'><input class='renameFolderInput' type='text' name='name' data-id='" + docID + "'></input></div>\
+        <div class='action'><div class='ui cancel button'>Cancel</div></div>")
     }else if(doc.hasClass("renameFile")){
         console.log("rename folder")
         renameDialog.append("<div class='ui header'>Rename</div>\
-        <div class='ui input'><input class='renameFileInput' type='text' name='name' data-id='" + docID + "'></input></div>")
+        <div class='ui input'><input class='renameFileInput' type='text' name='name' data-id='" + docID + "'></input></div>\
+        <div class='action'><div class='ui cancel button'>Cancel</div></div>")
     }
     
     renameDialog.modal('show')
