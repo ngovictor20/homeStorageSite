@@ -78,6 +78,28 @@ $("#uploadedDiv").on("click", function (e) {
     $("#uploadedList").css("display", "none")
 })
 
+$('#newFolderForm').on('click',function(e){
+    var form = $('#uploadFolder')
+    if($('#folderName').val()!=''){
+        form.submit(function(e){
+            console.log("submitting form")
+        })
+    }else{
+        console.log("input for new folder was empty, nothing happens")
+    }
+})
+
+$('#newFileForm').on('click',function(e){
+    var form = $('#fileUpload')
+    if($('#folderName').val()!=''){
+        form.submit(function(e){
+            console.log("submitting form")
+        })
+    }else{
+        console.log("Inout for new file was empty, nothing happens")
+    }
+})
+
 // $("#fileDiv").delegate(".fileName", "click", function (e) {
 //     console.log("Click event for fileName")
 //     var obj = $(this)
@@ -191,13 +213,13 @@ $("#menu").delegate(".moveFolder,.moveFile", "click", function (e) {
                     moveFolderList.append("<div id='moveFolderBack' data-id='"+response.parentFolder+"'>back</div>")
                     response.childFolders.forEach(function (x) {
                         if(folder.has(".moveFile")){
-                            moveFolderList.append("<div class='item'><div class='moveFolderItem item' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"' isFile='true'>Move Here</div></div></div><br>")
+                            moveFolderList.append("<div class='ui segment'><div class='moveFolderItem item' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"' isFile='true'>Move Here</div></div></div><br>")
                         }else{
-                            moveFolderList.append("<div class='item'><div class='moveFolderItem' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"'>Move Here</div></div></div><br>")
+                            moveFolderList.append("<div class='ui segment'><div class='moveFolderItem' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"'>Move Here</div></div></div><br>")
                         }
                     })
                     response.childFiles.forEach(function (x) {
-                        moveFileList.append("<div class='moveFileItem item' data-id='"+x._id +"'>" + x.name + "</div>")
+                        moveFileList.append("<div class='ui moveFileItem segment' data-id='"+x._id +"'>" + x.name + "</div>")
                     })
                     moveDialog.append("<div class='moveHere' data-id'"+response._id+"'>Move To This Folder</div>")
                 }
@@ -280,10 +302,10 @@ $("#moveFolderDialog").delegate("#moveFolderBack,.moveFolderItem,.moveHere","cli
                         moveFolderList.append("<div id='moveFolderBack' data-id='"+response.parentFolder+"'>back</div>")
                     }
                     response.childFolders.forEach(function (x) {
-                        moveFolderList.append("<li class='moveFolderItem' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"'>Move Here</div></li>")
+                        moveFolderList.append("<div class='moveFolderItem ui segment' data-id='"+x._id +"'>" + x.name + "<div class='moveButton' data-id='" + x._id + "' src-id='"+folderID+"'>Move Here</div></div>")
                     })
                     response.childFiles.forEach(function (x) {
-                        moveFileList.append("<li class='moveFileItem' data-id='"+x._id +"'>" + x.name + "</li>")
+                        moveFileList.append("<div class='moveFileItem ui segment' data-id='"+x._id +"'>" + x.name + "</div>")
                     })
                 }
             }
@@ -422,4 +444,8 @@ $("#newFileNavButton").on("click",function(e){
 
 $("#newFolderNavButton").on("click",function(e){
     $("#newFolderDialog").modal('show')
+})
+
+$('body').on('click',function(e){
+    console.log(e.target)
 })

@@ -19,8 +19,6 @@ body,html{
 #focus{
     background: rgb(135, 206, 250,0.18);
     border-color:white;
-    color:blue;
-    
 }
 
 #uploadedDiv{
@@ -30,4 +28,11 @@ body,html{
 .folderName,.fileName{
     display: inline-block;
     vertical-align: middle;
+}
+
+form{
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-left:3em;
+    padding-right:3em;
 }

@@ -16,14 +16,7 @@
         </div>
         <a class='item' id='newFolderNavButton'>Add Folder</a>
         <a class='item' id='newFileNavButton'>Add File</a>
-        <div class='right item'>Right</div>
     </div>
-
-
-
-
-
-
 
     <div class="ui container">
         <% if(folder.parentFolder){ %>
@@ -71,12 +64,12 @@
             <div class="ui header">New File</div>
             <div class="ui form">
                 <form enctype="multipart/form-data" id="fileUpload">
-                    <label>Upload File</label>
                     <input type="file" name="file" id="fileField">
-                    <button>submit</button>
+                    
                 </form>
             </div>
             <div class="actions">
+                <div class="ui button" id='newFileForm'>submit</div>                        
                 <div class="ui cancel button">Cancel</div>
             </div>
         </div>
@@ -85,16 +78,14 @@
             <div class="ui header">New Folder</div>
             <div class="ui form">
                 <form action="/folder/<%=folder._id%>/new" method="POST" id="folderUpload">
-                    <div class="ui labeled  action input">
-                        <div class="ui label">New Folder</div>
+                    <div class="ui labeled  action input"
                         <div class="ui input">
-                            <input type="text" name="folderName" id="folderName">
+                            <input type="text" name="folderName" id="folderName">                 
                         </div>
-                        <button class="ui button">submit</button>
-                    </div>
                 </form>
             </div>
             <div class="actions">
+                <div class="ui button" id='newFolderForm'>submit</div>                        
                 <div class="ui cancel button">Cancel</div>
             </div>
         </div>
@@ -107,10 +98,10 @@
 
         <div id="moveFolderDialog" class="ui small modal">
             <div class="ui header">Folders</div>
-            <div id="moveFolderList" class="ui list">
+            <div id="moveFolderList" class="ui segments">
             </div>
             <div class="ui header">Files</div>
-            <div id="moveFileList" class="ui list"></div>
+            <div id="moveFileList" class="ui segments"></div>
             <div class="actions">
                 <div id="moveDialogCancel" class="ui cancel button">Cancel Move</div>
             </div>
