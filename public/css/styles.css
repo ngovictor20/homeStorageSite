@@ -16,8 +16,8 @@ body,html{
     border: 1px solid #000;
 }
 
-.focus{
-    background-color: lightskyblue;
+#focus{
+    background: rgb(135, 206, 250,0.18);
     border-color:white;
     color:blue;
     

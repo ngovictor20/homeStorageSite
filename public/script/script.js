@@ -334,16 +334,21 @@ $("#folderList").delegate(".folderLink","dblclick",function(e){
     window.location.replace(url)
 })
 
-$("body").on("click",function(e){
-    console.log("Remove focus")
-    $(".focus").removeClass("focus")
-})
+// $(document).bind('click', function(e) {
+//     console.log(e.target)
+//     if(!$(e.target).is('#focus')) {
+//         $("#focus").attr("id","focus")
+//     }else{
+//         $("#focus").attr("id","")
+//     }
+//   });
 
 
 //Focus on an item
 $(".folderItem,.fileItem").on("click",function(e){
-    $(".focus").removeClass("focus")
-    $(this).addClass("focus")
+    console.log("Add focus")
+    $("#focus").attr("id","")
+    $(this).attr("id","focus")
 })
 
 
@@ -356,16 +361,16 @@ $(".folderItem,.fileItem").bind("contextmenu",function(e){
     menu.children().remove()
     if(doc.hasClass("folderItem")){
         console.log("Folder Item")
-        menu.append("<div class='moveFolder' data-id='"+docID+"'>Move</div>\
-        <form action='/folder/"+docID+"?_method=DELETE' method='POST' data-id='"+docID+"'><button>Delete</button></form>\
-        <div class='renameFolder' data-id='"+docID+"'>Rename Folder</div>")
+        menu.append("<div class='moveFolder ui segment' data-id='"+docID+"'>Move</div>\
+        <div class='ui segment'><form action='/folder/"+docID+"?_method=DELETE' method='POST' data-id='"+docID+"'><button>Delete</button></form></div>\
+        <div class='renameFolder ui segment' data-id='"+docID+"'>Rename Folder</div>")
     }else if(doc.hasClass("fileItem")){
         console.log("File Item")
-        menu.append("<div class='delete' data-id='"+docID+"'>Delete File</div>\
-        <div class='copy' data-id='"+docID+"'>Copy File</div>\
-        <div class='renameFile' data-id='"+docID+"'>Rename File</div>\
-        <div class='moveFile' data-id="+docID+">Move File</div>\
-        <a href='/folder/"+docID+"/file/"+docID+"' data-id='"+docID+"'>Download File</a>")
+        menu.append("<div class='delete ui segment' data-id='"+docID+"'>Delete File</div>\
+        <div class='copy ui segment' data-id='"+docID+"'>Copy File</div>\
+        <div class='renameFile ui segment' data-id='"+docID+"'>Rename File</div>\
+        <div class='moveFile ui segment' data-id="+docID+">Move File</div>\
+        <div class='ui segment'><a href='/folder/"+docID+"/file/"+docID+"' data-id='"+docID+"'>Download File</a></div>")
     }
     menu.css({
         top: e.pageY+'px',
