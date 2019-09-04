@@ -31,11 +31,11 @@
             <div id="folderList" class="ui segments">
                 <% folder.childFolders.forEach((x)=>{ %>
                 <%if(x){%>
-                <div class="ui segment folderItem" data-id="<%= x._id %>">
-                    <div class='folderLink' data-id="<%= x._id %>">
+                <div class='ui segment folderItem' data-id='<%= x._id %>'>
+                    <div class='folderLink' data-id='<%= x._id %>'>
                         <i class='icon folder open outline big'></i>
                         <span>
-                            <div class="folderName ui header" data-id="<%= x._id %>"><%= x.name %></div>
+                            <div class='folderName ui header' data-id='<%= x._id %>'><%= x.name %></div>
                         </span>
                     </div>
                 </div>
@@ -110,7 +110,7 @@
         <div id="menu" class="ui segments">
         </div>
 
-        <div id="renameDialog" class="ui modal container">
+        <div id="renameDialog" class="ui modal">
 
         </div>
     </div>

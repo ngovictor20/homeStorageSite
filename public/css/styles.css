@@ -36,3 +36,16 @@ form{
     padding-left:3em;
     padding-right:3em;
 }
+form#deleteFolderForm{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding:0px;
+
+}
+
+.ui.input.fluid{
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
