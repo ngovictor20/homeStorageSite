@@ -57,7 +57,7 @@ router.post("/folder/:folder_id/new", (req, res) => {
                                 console.log(newFolder)
                                 folder.childFolders.push(newFolder._id)
                                 folder.save()
-                                res.redirect("/folder/" + newFolder._id)
+                                res.send(newFolder)
                             }
                         })
 

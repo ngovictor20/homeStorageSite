@@ -5,14 +5,10 @@ $("#fileUpload").submit(function (e) {
     var folderID = folder.attr('data-id')
     console.log("Folder ID")
     console.log(folderID)
-    setTimeout(function () {
-        console.log("hi")
-    }, 1000)
     if ($("#fileField").val() == "") {
         console.log("File Field Check Failed")
         e.preventDefault();
     } else {
-        //console.log($("fileField"))
         var formdata = new FormData(this)
         $.ajax({
             url: "/folder/" + folderID + "/file/",
@@ -28,31 +24,16 @@ $("#fileUpload").submit(function (e) {
                     var parent = $("#fileList")
                     console.log(parent)
                     parent.append("\
-                    <div class='ui segment fileItem' data-id='"+r._id+"'>\
+                    <div class='ui segment fileItem' data-id='"+ r._id + "'>\
                         <i class='icon file outline big'></i>\
                         <span>\
-                            <div class='fileName ui header' data-id='"+r._id+"'>"+r.name+"</div>\
+                            <div class='fileName ui header' data-id='"+ r._id + "'>" + r.name + "</div>\
                         </span>\
                     </div>")
                     var uploadedDiv = $("#uploadedDiv")
-                    //uploadedDiv.css("display","inline")
                     var uploadedList = $("#uploadedList")
-                    //uploadedList.append("<li>" + r.name + "</li>")
-                    console.log("shoundlt this end")
-                    setTimeout(function () {
-                        console.log("hi")
-                    }, 5000)
-                    //document.close()
                 }
             },
-            error: function (jqXHR, textStatus, error) {
-                if (err) {
-                    console.log(err)
-                }
-            },
-            complete: function () {
-                console.log("completed ajax")
-            }
         })
     }
 });
@@ -71,11 +52,6 @@ $("#menu").delegate(".delete", "click", function (e) {
             if (r) {
                 console.log(r)
                 console.log("removing element")
-                // console.log($(this).parent())
-                // $(this).parent().remove()
-                // setTimeout(function () {
-                //     console.log("hi")
-                // }, 5000)
             }
         }
     })
@@ -95,8 +71,42 @@ $('#newFolderForm').on('click', function (e) {
     }
 })
 
-$("#folderUpload").on("submit",function(e){
-    
+$("#folderUpload").on("submit", function (e) {
+    e.preventDefault();
+    var folder = $("#folderID")
+    var folderID = folder.attr('data-id')
+    console.log("Folder ID")
+    console.log(folderID)
+    if ($("#folderName").val() == "") {
+        console.log("File Field Check Failed")
+        e.preventDefault();
+    } else {
+        $.ajax({
+            url: "/folder/" + folderID + "/new",
+            type: "POST",
+            dataType: "json",
+            data: { folderName: $("#folderName").val() },
+            success: function (r) {
+                console.log("In success")
+                console.log("result", r)
+                if (r) {
+                    var parent = $("#folderList")
+                    parent.append("\
+                    <div class='ui segment folderItem' data-id='"+r._id+"'>\
+                        <div class='folderLink' data-id='"+r._id+"'>\
+                            <i class='icon folder open outline big'></i>\
+                            <span>\
+                                <div class='folderName ui header' data-id='"+r._id+"'>"+r.name+"</div>\
+                            </span>\
+                        </div>\
+                    </div>")
+                    $("#newFolderDialog").modal("hide")
+                    var uploadedDiv = $("#uploadedDiv")
+                    var uploadedList = $("#uploadedList")
+                }
+            }
+        })
+    }
 })
 
 
@@ -350,8 +360,9 @@ $(".folderItem,.fileItem").on("click", function (e) {
     $(this).attr("id", "focus")
 })
 
+//<div class='ui segment'><form id='deleteFolderForm' action='/folder/"+ docID + "?_method=DELETE' method='POST' data-id='" + docID + "'><div id='deleteFormSubmit'>Delete</div></form></div>\
 //CONTEXT MENU STUFF
-$("#folderList,#fileList").delegate(".folderItem,.fileItem","contextmenu", function (e) {
+$("#folderList,#fileList").delegate(".folderItem,.fileItem", "contextmenu", function (e) {
     $("#focus").attr("id", "")
     $(this).attr("id", "focus")
     console.log("Context Menu")
@@ -363,7 +374,7 @@ $("#folderList,#fileList").delegate(".folderItem,.fileItem","contextmenu", funct
         console.log("Folder Item")
         menu.append("\
         <div class='moveFolder ui segment' data-id='"+ docID + "'>Move</div>\
-        <div class='ui segment'><form id='deleteFolderForm' action='/folder/"+ docID + "?_method=DELETE' method='POST' data-id='" + docID + "'><div id='deleteFormSubmit'>Delete</div></form></div>\
+        <div class='ui segment'><form id='deleteFolderForm' data-id='" + docID + "'><div id='deleteFormSubmit'>Delete</div></form></div>\
         <div class='renameFolder ui segment' data-id='"+ docID + "'>Rename Folder</div>")
     } else if (doc.hasClass("fileItem")) {
         console.log("File Item")
@@ -416,6 +427,32 @@ $('#deleteFormSubmit').on("click", function (e) {
     console.log("Submit form to delete")
     $('#deleteFolderForm').submit()
 })
+
+/** FIX THIS TO DELETE*//
+$("#deleteFolderForm").on("submit",function(e){
+    e.preventDefault();
+    var folder = $("#folderID")
+    var folderID = folder.attr('data-id')
+    console.log("Folder ID")
+    console.log(folderID)
+    if ($("#fileField").val() == "") {
+        console.log("File Field Check Failed")
+        e.preventDefault();
+    } else {
+        $.ajax({
+            url: "/folder/" + folderID,
+            type: "DELETE",
+            success: function (r) {
+                console.log("In success")
+                console.log("result", r)
+                if (r) {
+                    console.log("Result exists, no removing document")
+                }
+            },
+        })
+    }
+})
+
 
 //NAV BAR BUTTONS
 $("#newFileNavButton").on("click", function (e) {
