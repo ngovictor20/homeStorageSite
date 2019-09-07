@@ -39,6 +39,7 @@ $("#fileUpload").submit(function (e) {
 });
 
 //probably an issue with putting getting the folderID here
+//DELETE FILE 
 $("#menu").delegate(".delete", "click", function (e) {
     var folder = $("#folderID")
     var folderID = folder.attr('data-id')
@@ -51,6 +52,9 @@ $("#menu").delegate(".delete", "click", function (e) {
         success: function (r) {
             if (r) {
                 console.log(r)
+                var eleToDelete = $("div[class=fileItem][data-id="+r._id+"]")
+                console.log(eleToDelete)
+                eleToDelete.remove()
                 console.log("removing element")
             }
         }
@@ -245,6 +249,9 @@ $("#moveFolderDialog").delegate(".moveButton", "click", function (e) {
             if (response.err) {
                 console.log("ERROR: " + response.err)
             } else {
+                var eleToDelete = $("div[class=folderItem][data-id="+srcFolderID+"]")
+                console.log(eleToDelete)
+                eleToDelete.remove()
                 console.log("MOVE SUCCESSFUL")
             }
         }
@@ -374,7 +381,7 @@ $("#folderList,#fileList").delegate(".folderItem,.fileItem", "contextmenu", func
         console.log("Folder Item")
         menu.append("\
         <div class='moveFolder ui segment' data-id='"+ docID + "'>Move</div>\
-        <div class='ui segment'><form id='deleteFolderForm' data-id='" + docID + "'><div id='deleteFormSubmit'>Delete</div></form></div>\
+        <div class='ui segment'><div id='deleteFormSubmit'>Delete</div></div>\
         <div class='renameFolder ui segment' data-id='"+ docID + "'>Rename Folder</div>")
     } else if (doc.hasClass("fileItem")) {
         console.log("File Item")
@@ -431,7 +438,7 @@ $('#deleteFormSubmit').on("click", function (e) {
 /** FIX THIS TO DELETE*//
 $("#deleteFolderForm").on("submit",function(e){
     e.preventDefault();
-    var folder = $("#folderID")
+    var folder = $(this) //get the DATA-ID from the selected folder to be deleted
     var folderID = folder.attr('data-id')
     console.log("Folder ID")
     console.log(folderID)
@@ -446,6 +453,9 @@ $("#deleteFolderForm").on("submit",function(e){
                 console.log("In success")
                 console.log("result", r)
                 if (r) {
+                    var eleToDelete = $("div[class=folderItem][data-id="+folderID+"]")
+                    console.log(eleToDelete)
+                    eleToDelete.remove()
                     console.log("Result exists, no removing document")
                 }
             },
