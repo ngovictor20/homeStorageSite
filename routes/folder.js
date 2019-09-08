@@ -86,7 +86,7 @@ router.delete("/folder/:folder_id", (req, res) => {
                 console.log(deletedDoc)
                 delRecursive(deletedDoc).then(function (val) {
                     console.log("Finished recursive function:" + val)
-                    res.send(val)
+                    res.send(deletedDoc)
                 })
             } else {
                 res.redirect("back")

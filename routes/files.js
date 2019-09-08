@@ -115,10 +115,7 @@ router.delete("/folder/:folder_id/file", (req, res) => {
                             fold.childFiles.remove(index)
                             console.log("saving parent")
                             fold.save()
-                            res.send({
-                                response: "DELETE",
-                                parentFolder: fold
-                            })
+                            res.send(deletedFile)
                         }
                     })
                 }

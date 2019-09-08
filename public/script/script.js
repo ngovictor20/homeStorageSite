@@ -48,11 +48,11 @@ $("#menu").delegate(".delete", "click", function (e) {
         url: "/folder/" + folderID + "/file/",
         type: "delete",
         data: { id: $(this).attr("data-id") },
-        dataType: "json",
         success: function (r) {
             if (r) {
                 console.log(r)
-                var eleToDelete = $("div[class=fileItem][data-id="+r._id+"]")
+                console.log("div.fileItem[data-id=" + r._id + "]")
+                var eleToDelete = $("div.fileItem[data-id=" + r._id + "]")
                 console.log(eleToDelete)
                 eleToDelete.remove()
                 console.log("removing element")
@@ -96,11 +96,11 @@ $("#folderUpload").on("submit", function (e) {
                 if (r) {
                     var parent = $("#folderList")
                     parent.append("\
-                    <div class='ui segment folderItem' data-id='"+r._id+"'>\
-                        <div class='folderLink' data-id='"+r._id+"'>\
+                    <div class='ui segment folderItem' data-id='"+ r._id + "'>\
+                        <div class='folderLink' data-id='"+ r._id + "'>\
                             <i class='icon folder open outline big'></i>\
                             <span>\
-                                <div class='folderName ui header' data-id='"+r._id+"'>"+r.name+"</div>\
+                                <div class='folderName ui header' data-id='"+ r._id + "'>" + r.name + "</div>\
                             </span>\
                         </div>\
                     </div>")
@@ -249,7 +249,7 @@ $("#moveFolderDialog").delegate(".moveButton", "click", function (e) {
             if (response.err) {
                 console.log("ERROR: " + response.err)
             } else {
-                var eleToDelete = $("div[class=folderItem][data-id="+srcFolderID+"]")
+                var eleToDelete = $("div[class=folderItem][data-id=" + srcFolderID + "]")
                 console.log(eleToDelete)
                 eleToDelete.remove()
                 console.log("MOVE SUCCESSFUL")
@@ -381,7 +381,7 @@ $("#folderList,#fileList").delegate(".folderItem,.fileItem", "contextmenu", func
         console.log("Folder Item")
         menu.append("\
         <div class='moveFolder ui segment' data-id='"+ docID + "'>Move</div>\
-        <div class='ui segment' id='deleteFolder'>Delete</div>\
+        <div class='ui segment' id='deleteFolder' data-id='"+docID+"'>Delete</div>\
         <div class='renameFolder ui segment' data-id='"+ docID + "'>Rename Folder</div>")
     } else if (doc.hasClass("fileItem")) {
         console.log("File Item")
@@ -430,60 +430,57 @@ $("#menu").delegate(".renameFile,.renameFolder", "click", function (e) {
     renameDialog.modal('show')
 })
 
-$('#deleteFormSubmit').on("click", function (e) {
-    console.log("Submit form to delete")
-    e.preventDefault();
-    var folder = $(this) //get the DATA-ID from the selected folder to be deleted
-    var folderID = folder.attr('data-id')
-    console.log("Folder ID")
-    console.log(folderID)
-    if ($("#fileField").val() == "") {
-        console.log("File Field Check Failed")
-        e.preventDefault();
-    } else {
-        $.ajax({
-            url: "/folder/" + folderID,
-            type: "DELETE",
-            success: function (r) {
-                console.log("In success")
-                console.log("result", r)
-                if (r) {
-                    var eleToDelete = $("div[class=folderItem][data-id="+folderID+"]")
-                    console.log(eleToDelete)
-                    eleToDelete.remove()
-                    console.log("Result exists, no removing document")
-                }
-            },
-        })
-    }
-})
+// $('#deleteFormSubmit').on("click", function (e) {
+//     console.log("Submit form to delete")
+//     e.preventDefault();
+//     var folder = $(this) //get the DATA-ID from the selected folder to be deleted
+//     var folderID = folder.attr('data-id')
+//     console.log("Folder ID")
+//     console.log(folderID)
+//     if ($("#fileField").val() == "") {
+//         console.log("File Field Check Failed")
+//         e.preventDefault();
+//     } else {
+//         $.ajax({
+//             url: "/folder/" + folderID,
+//             type: "DELETE",
+//             success: function (r) {
+//                 console.log("In success")
+//                 console.log("result", r)
+//                 if (r) {
+//                     var eleToDelete = $("div[class=folderItem][data-id="+folderID+"]")
+//                     console.log(eleToDelete)
+//                     eleToDelete.remove()
+//                     console.log("Result exists, no removing document")
+//                 }
+//             },
+//         })
+//     }
+// })
 
-/** FIX THIS TO DELETE*//
-$("#deleteFolder").on("click",function(e){
-    e.preventDefault();
+/** FIX THIS TO DELETE*/
+$("#menu").delegate("#deleteFolder", "click", function (e) {
+    console.log("On Click Delete")
     var folder = $(this) //get the DATA-ID from the selected folder to be deleted
     var folderID = folder.attr('data-id')
     console.log("Folder ID")
     console.log(folderID)
-    if ($("#fileField").val() == "") {
-        console.log("File Field Check Failed")
-        e.preventDefault();
-    } else {
-        $.ajax({
-            url: "/folder/" + folderID,
-            type: "DELETE",
-            success: function (r) {
-                console.log("In success")
-                console.log("result", r)
-                if (r) {
-                    var eleToDelete = $("div[class=folderItem][data-id="+folderID+"]")
-                    console.log(eleToDelete)
-                    eleToDelete.remove()
-                    console.log("Result exists, no removing document")
-                }
-            },
-        })
-    }
+    e.preventDefault();
+    $.ajax({
+        url: "/folder/" + folderID,
+        type: "DELETE",
+        success: function (r) {
+            console.log("In success")
+            console.log("result", r)
+            if (r) {
+                var eleToDelete = $("div.folderItem[data-id=" + folderID + "]")
+                console.log(eleToDelete)
+                eleToDelete.remove()
+                console.log("Result exists, removing document")
+            }
+        },
+    })
+
 })
 
 
